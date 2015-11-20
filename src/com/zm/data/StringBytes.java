@@ -75,16 +75,16 @@ public class StringBytes extends Field {
             list[i].encode(mgr);
 
         Field[] list2 = new Field[8];
-        list2[0] = new OneByte("one", false, false);
-        list2[1] = new TwoBytes("two", false, false);
-        list2[2] = new FourBytes("four", false, false);
-        list2[3] = new IP("ip", false, false);
-        list2[4] = new Array("array", false, false);
-        list2[5] = new EightBytes("eight", false, false);
-        list2[6] = new Hex("hex", false, false);
-        list2[7] = new StringBytes("string", false, false);
+        list2[0] = new OneByte("one", true, false);
+        list2[1] = new TwoBytes("two", true, false);
+        list2[2] = new FourBytes("four", true, false);
+        list2[3] = new IP("ip", true, false);
+        list2[4] = new Array("array", true, false);
+        list2[5] = new EightBytes("eight", true, false);
+        list2[6] = new Hex("hex", true, false);
+        list2[7] = new StringBytes("string", true, false);
         for(int i = 0; i < list.length; i++)
-            list2[i].encode(mgr);
+            list2[i].decode(mgr);
 
         System.out.println(BU.bytes2HexGoodLook(mgr.getBuffer()));
         for(int i = 0; i < list.length; i++){
