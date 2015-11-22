@@ -1,5 +1,6 @@
-package com.zm.data;
+package com.zm.Field;
 
+import com.zm.message.BufferMgr;
 import com.zm.utils.BU;
 import com.zm.utils.U;
 
@@ -30,8 +31,21 @@ public class EightBytes extends Field {
             value = BU.bytes2Long(tmp);
         else
             value = BU.bytes2Long_h(tmp);
-        this.originValue = "" + value;
         this.strValue = "" + value;
+    }
+
+    @Override
+    protected void initOriginValue() {
+        this.originValue = "0";
+    }
+
+    @Override
+    public int getLen() {
+        return 8;
+    }
+
+    public long getValue() {
+        return value;
     }
 
     public EightBytes(String name, String originValue) {
@@ -40,16 +54,6 @@ public class EightBytes extends Field {
 
     public EightBytes(String name, String originValue, boolean hostByte, boolean valueCare) {
         super(name, originValue, hostByte, valueCare);
-    }
-
-    public EightBytes(String name) {
-        super(name);
-        this.originValue = "0";
-    }
-
-    public EightBytes(String name, boolean hostByte, boolean valueCare) {
-        super(name, hostByte, valueCare);
-        this.originValue = "0";
     }
 
     private long value = 0;

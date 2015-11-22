@@ -1,5 +1,6 @@
-package com.zm.data;
+package com.zm.Field;
 
+import com.zm.message.BufferMgr;
 import com.zm.utils.BU;
 
 /**
@@ -8,14 +9,10 @@ import com.zm.utils.BU;
 public class Hex extends Field {
     @Override
     public void encode(BufferMgr bufferMgr) {
-        len = (originValue.length() % 2 == 0)? originValue.length() / 2 : originValue.length() / 2 + 1;
-        if(originValue.length() % 2 == 0){
-            len =  originValue.length() / 2;
+        if(originValue.length() % 2 == 0)
             strValue = originValue;
-        } else{
-            len = originValue.length() / 2 + 1;
+        else
             strValue = "0" + originValue;
-        }
         try {
             if(netByte){
                 bufferMgr.putBuffer(BU.int2Bytes(len));
@@ -45,38 +42,33 @@ public class Hex extends Field {
             strValue = BU.bytes2Hex(tmp);
         else
             strValue = BU.bytes2Hex_h(tmp);
-        this.originValue = strValue;
+    }
+
+    @Override
+    protected void initOriginValue() {
+        this.originValue = "";
+    }
+
+    @Override
+    public int getLen() {
+        return len + 4;
+    }
+
+    @Override
+    public void setOriginValue(String originValue){
+        super.setOriginValue(originValue);
+        len = (this.originValue.length() % 2 == 0)? this.originValue.length() / 2 : this.originValue.length() / 2 + 1;
     }
 
     public Hex(String name, String originValue) {
         super(name, originValue);
+        len = (this.originValue.length() % 2 == 0)? this.originValue.length() / 2 : this.originValue.length() / 2 + 1;
     }
 
     public Hex(String name, String originValue, boolean hostByte, boolean valueCare) {
         super(name, originValue, hostByte, valueCare);
-    }
-
-    public Hex(String name) {
-        super(name);
-    }
-
-    public Hex(String name, boolean hostByte, boolean valueCare) {
-        super(name, hostByte, valueCare);
+         len = (this.originValue.length() % 2 == 0)? this.originValue.length() / 2 : this.originValue.length() / 2 + 1;
     }
 
     private int len = 0;
-
-    public static void main(String[] args){
-        BufferMgr mgr = new BufferMgr();
-
-        Field[] list = new Field[5];
-        list[0] = new Hex("result", "", false, true);
-        list[0].encode(mgr);
-
-        list[1] = new Hex("result", false, true);
-        list[1].decode(mgr);
-        System.out.println(list[0] + " : " + list[1]);
-        System.out.println(BU.bytes2HexGoodLook(mgr.getBuffer()));
-        System.out.println(list[0].equals(list[1]));
-    }
 }

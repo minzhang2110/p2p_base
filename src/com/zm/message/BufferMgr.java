@@ -1,4 +1,4 @@
-package com.zm.data;
+package com.zm.message;
 
 import com.zm.utils.BU;
 
@@ -40,6 +40,15 @@ public class BufferMgr {
         ret = BU.subByte(buffer, decodeIndex, size);
         decodeIndex += size;
         return ret;
+    }
+
+    //首先解码Http
+    public byte[] getHttpHeader(){
+        int index = BU.find(buffer, "\r\n\r\n".getBytes());
+        if(index == -1)
+            return null;
+        decodeIndex = index + 4;
+        return BU.subByte(buffer, 0, index);
     }
 
     public void putBuffer(byte[] data){

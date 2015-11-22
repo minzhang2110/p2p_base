@@ -1,5 +1,6 @@
-package com.zm.data;
+package com.zm.Field;
 
+import com.zm.message.BufferMgr;
 import com.zm.utils.BU;
 import com.zm.utils.U;
 
@@ -30,8 +31,21 @@ public class FourBytes extends Field {
             value = BU.bytes2Int(tmp);
         else
             value = BU.bytes2Int_h(tmp);
-        this.originValue = "" + value;
         this.strValue = "" + value;
+    }
+
+    @Override
+    protected void initOriginValue() {
+        this.originValue = "0";
+    }
+
+    @Override
+    public int getLen() {
+        return 4;
+    }
+
+    public int getValue() {
+        return value;
     }
 
     public FourBytes(String name, String originValue) {
@@ -42,27 +56,5 @@ public class FourBytes extends Field {
         super(name, originValue, hostByte, valueCare);
     }
 
-    public FourBytes(String name) {
-        super(name);
-        this.originValue = "" + 0;
-    }
-
-    public FourBytes(String name, boolean hostByte, boolean valueCare) {
-        super(name, hostByte, valueCare);
-        this.originValue = "" + 0;
-    }
-
     private int value = 0;
-
-    public static void main(String[] args){
-        BufferMgr mgr = new BufferMgr();
-
-        Field[] list = new Field[5];
-        list[0] = new FourBytes("result", "255");
-        list[0].encode(mgr);
-
-        list[1] = new FourBytes("result", "255", false, true);
-        list[1].encode(mgr);
-        System.out.println(BU.bytes2HexGoodLook(mgr.getBuffer()));
-    }
 }

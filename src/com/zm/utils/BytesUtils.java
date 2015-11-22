@@ -61,6 +61,14 @@ public class BytesUtils {
         return ret;
     }
 
+    //查找到相应字节的位置,返回第一次出现的位置
+    //找不到返回-1
+    public static int find(byte[] data, byte[] search){
+        String str1 = new String(data);
+        String str2 = new String(search);
+        return str1.indexOf(str2);
+    }
+
     public static String bytes2Hex(byte[] data){
         StringBuffer buf = new StringBuffer(data.length * 2);
         for (int i = 0; i < data.length; i++) {
@@ -396,5 +404,7 @@ public class BytesUtils {
 
         System.out.println(BytesUtils.bytes2Ip(BytesUtils.ip2Bytes("127.0.0.1")));
         System.out.println(BytesUtils.bytes2Ip_h(BytesUtils.ip2Bytes_h("127.0.0.1")));
+
+        System.out.println(BytesUtils.find("abcde\r\n\r\n".getBytes(), "\r\n\r\n".getBytes()));
     }
 }

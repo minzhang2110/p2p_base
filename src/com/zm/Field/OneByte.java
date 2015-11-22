@@ -1,5 +1,6 @@
-package com.zm.data;
+package com.zm.Field;
 
+import com.zm.message.BufferMgr;
 import com.zm.utils.BU;
 import com.zm.utils.U;
 
@@ -25,8 +26,17 @@ public class OneByte extends Field {
         if((tmp = bufferMgr.getBuffer(1)) == null)
             throw new IllegalStateException("[" + name + "] 解码失败");
         value = tmp[0];
-        this.originValue = "" + value;
         this.strValue = "" + value;
+    }
+
+    @Override
+    protected void initOriginValue() {
+        this.originValue = "0";
+    }
+
+    @Override
+    public int getLen() {
+        return 1;
     }
 
     public OneByte(String name, String originValue){
@@ -38,34 +48,9 @@ public class OneByte extends Field {
         super(name, originValue, hostByte, valueCare);
     }
 
-    public OneByte(String name) {
-        super(name);
-        this.originValue = "" + 0;
-    }
-
-    public OneByte(String name, boolean hostByte, boolean valueCare) {
-        super(name, hostByte, valueCare);
-        this.originValue = "" + 0;
+    public byte getValue() {
+        return value;
     }
 
     private byte value = 0;
-
-    public static void main(String[] args){
-        BufferMgr mgr = new BufferMgr();
-        Field one = new OneByte("result", "255");
-        one.encode(mgr);
-
-        Field one2 = new OneByte("result", true, false);
-        one2.decode(mgr);
-
-        System.out.println(one.getValue());
-        System.out.println(one2.getValue());
-        System.out.println(one.equals(one2));
-        System.out.println(one2.equals(one));
-        System.out.println(BU.bytes2HexGoodLook(mgr.getBuffer()));
-
-        Field one3 = new OneByte("result");
-        one3.decode(mgr);
-        System.out.println(one3.getValue());
-    }
 }
