@@ -135,7 +135,7 @@ public class Message {
             case NONE:
                 break;
             case AES:
-                if(before.length < 12){
+                if(before.length < 13){
                     throw new IllegalStateException("AES加密失败,数据小于12字节");
                 }
                 if((after = AESEncryptApplication.encryptEx(before, before.length)) == null){
@@ -182,7 +182,7 @@ public class Message {
             case NONE:
                 break;
             case AES:
-                if(before.length < 12){
+                if(before.length < 13){
                     throw new IllegalStateException("AES解密失败,数据小于12字节");
                 }
                 if((after = AESEncryptApplication.decryptEx(before, before.length)) == null){

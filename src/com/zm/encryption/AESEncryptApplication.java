@@ -18,13 +18,13 @@ public class AESEncryptApplication {
 
     public static void main(String[] args) {
 
-        //byte[] one = BU.hex2Bytes("000000c814ffffffff101112");
+        byte[] one = BU.hex2Bytes("000000c814ffffffff10111213");
 
-        //byte[] two = encryptEx(one, one.length);
-        byte[] two = BU.hex2Bytes("0000001c000000c80000000100000010f737b25be49bf056d18bd26524961d6d");
+        byte[] two = encryptEx(one, one.length);
+
         byte[] three = decryptEx(two, two.length);
 
-        //System.out.println(BU.bytes2Hex(one));
+        System.out.println(BU.bytes2Hex(one));
         System.out.println(BU.bytes2Hex(two));
         System.out.println(BU.bytes2Hex(three));
     }
