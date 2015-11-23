@@ -50,7 +50,7 @@ public class MsgHttpHeader {
 
     public boolean addBodyLen(int contentLength){
         if(strValue.indexOf("Content-Length") == -1){
-            strValue = strValue.trim() + "Content-Length: " + contentLength + "\r\n\r\n";
+            strValue = strValue.trim() + "\r\nContent-Length: " + contentLength + "\r\n\r\n";
         }
         return false;
     }

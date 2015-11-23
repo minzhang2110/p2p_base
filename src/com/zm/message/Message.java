@@ -232,7 +232,7 @@ public class Message {
     private boolean setContentLength(int contentLength){
         if(header == null)
             return false;
-        Pattern pattern = Pattern.compile("(.*Content-Length: )([0-9]+)");
+        Pattern pattern = Pattern.compile("([\\s\\S]*Content-Length: )([0-9]+)");
         Matcher matcher = pattern.matcher(new String(mgr.getBuffer()));
         if(matcher.find()){
             byte[] part1 = matcher.group(1).getBytes();
@@ -302,8 +302,8 @@ public class Message {
         message.msgBody.encode(message.mgr);*/
         Message message1 = new Message(input);
         System.out.println(BU.bytes2HexGoodLook(message1.encode()));
-        System.out.println(BU.bytes2HexGoodLook(message1.mgr.getBuffer()));
-
+        System.out.println(new String(message1.mgr.getBuffer()));
+/*
         Message message = new Message(input, BU.hex2Bytes("474554202f436f6e74656e742d4c656e6774683a2036340d0a0d0a00010000000200030000000000000004000000050000000000000006000000070000001c000000c80000000100000010f737b25be49bf056d18bd26524961d6d"));
         //message.decode();
         System.out.println("======================================");
@@ -314,7 +314,7 @@ public class Message {
 
         CompareResult result = message1.compare(message);
         System.out.println(result.equal);
-        System.out.println(result.msg);
+        System.out.println(result.msg);*/
 
 
     }
