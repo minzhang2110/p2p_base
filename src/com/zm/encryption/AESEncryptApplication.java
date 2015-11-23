@@ -18,7 +18,7 @@ public class AESEncryptApplication {
 
     public static void main(String[] args) {
 
-        byte[] one = BU.hex2Bytes("000000c814ffffffff10111213");
+        byte[] one = BU.hex2Bytes("000000c814ffffffff101112");
 
         byte[] two = encryptEx(one, one.length);
 
