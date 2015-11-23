@@ -21,11 +21,10 @@ public class MsgHttpHeader {
             throw new IllegalStateException("[HTTP] 解码失败");
         strValue = new String(tmp);
         strValue += "\r\n\r\n";
-        len = strValue.length();
     }
 
     public int getLen(){
-        return len;
+        return strValue.length();
     }
 
     public CompareResult compare(MsgHttpHeader other){
@@ -49,6 +48,13 @@ public class MsgHttpHeader {
         return getStrValue();
     }
 
+    public boolean addBodyLen(int contentLength){
+        if(strValue.indexOf("Content-Length") == -1){
+            strValue = strValue.trim() + "Content-Length: " + contentLength + "\r\n\r\n";
+        }
+        return false;
+    }
+
 
     public MsgHttpHeader(String strValue, boolean valueCare){
         if(strValue == null)
@@ -57,12 +63,10 @@ public class MsgHttpHeader {
             strValue = strValue.trim();
             this.strValue = strValue + "\r\n\r\n";
         }
-        this.len = this.strValue.length();
         this.valueCare = valueCare;
     }
 
     private String strValue = "";
-    private int len = 0;
     private boolean valueCare = true;
 
 }
