@@ -259,12 +259,16 @@ public class Message {
         if(this == other)
             return new CompareResult(true, "");
         CompareResult result = null;
-        result = this.http.compare(other.http);
-        if(!result.equal)
-            return result;
-        result = this.longHeader.compare(other.longHeader);
-        if(!result.equal)
-            return result;
+        if(http != null){
+            result = this.http.compare(other.http);
+            if(!result.equal)
+                return result;
+        }
+        if(longHeader != null){
+            result = this.longHeader.compare(other.longHeader);
+            if(!result.equal)
+                return result;
+        }
         result = this.header.compare(other.header);
         if(!result.equal)
             return result;

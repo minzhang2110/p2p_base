@@ -231,8 +231,8 @@ public class Utils {
 
     static final String[] HTTPHEADER = {"http", "httpheader"};
     static final String[] CONFIG = {"config", "c"};
-    static final String[] LONGHEADER = {"lheader", "l", "longheader"};
-    static final String[] HEADER = {"header", "h"};
+    static final String[] LONGHEADER = {"lhead", "lheader", "l", "longheader"};
+    static final String[] HEADER = {"head", "header", "h"};
     static final String[] BODY = {"body", "b"};
 
     // 字节数值范围：-128~255，转换成byte类型为-128~127
