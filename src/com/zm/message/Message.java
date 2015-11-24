@@ -158,7 +158,10 @@ public class Message {
                     mgr = new BufferMgr();
                     mgr.putBuffer(BU.bytesMerger(stay, after));
                     setMsgLen(after.length);
-                    setContentLength(after.length + longHeader.getLen());
+                    int len = 0;
+                    if(longHeader != null)
+                        len += longHeader.getLen();
+                    setContentLength(after.length + len);
                 }
                 break;
             default:
@@ -205,7 +208,10 @@ public class Message {
                     mgr = new BufferMgr();
                     mgr.putBuffer(BU.bytesMerger(stay, after));
                     setMsgLen(after.length);
-                    setContentLength(after.length + longHeader.getLen());
+                    int len = 0;
+                    if(longHeader != null)
+                        len += longHeader.getLen();
+                    setContentLength(after.length + len);
                 }
                 break;
             default:
