@@ -118,7 +118,7 @@ public class Utils {
         Matcher matcher = pattern.matcher(tmp);
         if(matcher.find()){
             hostOrder = matcher.group(1);
-            type = matcher.group(2);
+            type = matcher.group(2).toLowerCase();
             name = matcher.group(3);
             value = matcher.group(4);
         }else
