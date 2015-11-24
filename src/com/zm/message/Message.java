@@ -174,10 +174,12 @@ public class Message {
         int index = 0;
         if(http != null){
             index += BU.find(mgr.getBuffer(), "\r\n\r\n".getBytes());
+            index += 4;
         }
         if(longHeader != null){
-            index += 4 + 36;
+            index += 36;
         }
+
         byte[] stay = BU.subByte(mgr.getBuffer(), 0, index);
         byte[] before = BU.subByte(mgr.getBuffer(), index, mgr.Length() - index);
         byte[] after = null;
