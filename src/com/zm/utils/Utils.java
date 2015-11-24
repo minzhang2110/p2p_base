@@ -174,6 +174,7 @@ public class Utils {
 
     //不存在返回null
     public static String getSection(String p2pStr, String section){
+        p2pStr = p2pStr.replaceAll("#.*\r\n", "\r\n");
         Pattern pattern = Pattern.compile("\\[([^\\[|\\]]+)\\]([^\\[|\\]]*)",
                 Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE );
         Matcher matcher = pattern.matcher(p2pStr);
@@ -230,7 +231,7 @@ public class Utils {
     }
 
     static final String[] HTTPHEADER = {"http", "httpheader"};
-    static final String[] CONFIG = {"config", "c"};
+    static final String[] CONFIG = {"config", "conf", "c"};
     static final String[] LONGHEADER = {"lhead", "lheader", "l", "longheader"};
     static final String[] HEADER = {"head", "header", "h"};
     static final String[] BODY = {"body", "b"};
@@ -285,10 +286,7 @@ public class Utils {
         System.out.println(getBodySec(input));
         System.out.println(getSection(input, "123"));
         System.out.println(getMsgConfig(input));*/
-        BufferMgr mgr = new BufferMgr();
-        MsgConfig config = getMsgConfig(input);
-        strToField("1@Result=256", config).encode(mgr);
-        System.out.println(BU.bytes2HexGoodLook(mgr.getBuffer()));
+        System.out.println(getSection(input, "config"));
 
     }
 }
