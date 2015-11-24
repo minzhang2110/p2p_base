@@ -16,11 +16,10 @@ public class Hex extends Field {
         try {
             if(netByte){
                 bufferMgr.putBuffer(BU.int2Bytes(len));
-                bufferMgr.putBuffer(BU.hex2Bytes(originValue));
             }else {
                 bufferMgr.putBuffer(BU.int2Bytes_h(len));
-                bufferMgr.putBuffer(BU.hex2Bytes_h(originValue));
             }
+            bufferMgr.putBuffer(BU.hex2Bytes(originValue));
         }catch (Exception e){
             throw new IllegalStateException("[" + name + "] 编码失败 : " + e.getMessage());
         }
@@ -38,10 +37,7 @@ public class Hex extends Field {
             len = BU.bytes2Int_h(tmp);
         if((tmp = bufferMgr.getBuffer(len)) == null)
             throw new IllegalStateException("[" + name + "] 解码失败");
-        if(netByte)
-            strValue = BU.bytes2Hex(tmp);
-        else
-            strValue = BU.bytes2Hex_h(tmp);
+        strValue = BU.bytes2Hex(tmp);
     }
 
     @Override

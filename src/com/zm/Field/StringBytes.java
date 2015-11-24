@@ -12,11 +12,10 @@ public class StringBytes extends Field {
         try {
             if(netByte){
                 bufferMgr.putBuffer(BU.int2Bytes(len));
-                bufferMgr.putBuffer(originValue.getBytes());
             }else {
                 bufferMgr.putBuffer(BU.int2Bytes_h(len));
-                bufferMgr.putBuffer(BU.bytesReverse(originValue.getBytes()));
             }
+            bufferMgr.putBuffer(originValue.getBytes());
         }catch (Exception e){
             throw new IllegalStateException("[" + name + "] 编码失败 : " + e.getMessage());
         }
@@ -34,10 +33,7 @@ public class StringBytes extends Field {
             len = BU.bytes2Int_h(tmp);
         if((tmp = bufferMgr.getBuffer(len)) == null)
             throw new IllegalStateException("[" + name + "] 解码失败");
-        if(netByte)
-            strValue = new String(tmp);
-        else
-            strValue = new String(BU.bytesReverse(tmp));
+        strValue = new String(tmp);
     }
 
     @Override
