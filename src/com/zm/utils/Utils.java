@@ -113,7 +113,7 @@ public class Utils {
         String type = "";
         String name = "";
         String value = "";
-        Pattern pattern = Pattern.compile("^([\\^\\~\\!]?)([1248aihs])@([0-9a-z]+)=([0-9a-z\\.-]+|\\*)$",
+        Pattern pattern = Pattern.compile("^([\\^\\~\\!]?)([1248aihs])@([0-9a-z_]+)=([0-9a-z\\.-]+|\\*)$",
                 Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE);
         Matcher matcher = pattern.matcher(tmp);
         if(matcher.find()){
@@ -174,7 +174,7 @@ public class Utils {
 
     //不存在返回null
     public static String getSection(String p2pStr, String section){
-        p2pStr = p2pStr.replaceAll("#.*\r\n", "\r\n");
+        p2pStr = p2pStr.replaceAll("#.*[\r|\r\n]", "\r\n");
         Pattern pattern = Pattern.compile("\\[([^\\[|\\]]+)\\]([^\\[|\\]]*)",
                 Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE );
         Matcher matcher = pattern.matcher(p2pStr);
@@ -287,6 +287,7 @@ public class Utils {
         System.out.println(getSection(input, "123"));
         System.out.println(getMsgConfig(input));*/
         System.out.println(getSection(input, "config"));
-
+        System.out.println(getMsgConfig(input));
+        System.out.println(strToField("1@re_sult=2", new MsgConfig()).getName());
     }
 }
