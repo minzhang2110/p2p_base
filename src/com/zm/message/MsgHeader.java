@@ -19,6 +19,14 @@ abstract public class MsgHeader {
             list.get(i).decode(mgr);
         }
     }
+    public String toString(){
+        String ret = "";
+        for(int i = 0; i < list.size(); i++){
+            ret += list.get(i).getName() + "=" + list.get(i) + "\r\n";
+        }
+        return  ret;
+    }
+
     public int getLen(){
         int len = 0;
         for(int i = 0; i < list.size(); i++)
