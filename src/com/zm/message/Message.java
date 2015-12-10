@@ -40,7 +40,7 @@ public class Message {
     private void initBody(String p2pStr){
         String strSection = U.getBodySec(p2pStr);
         if(strSection == null || strSection.equals(""))
-            throw new IllegalArgumentException("消息体不能为空");
+            msgBody = null;//区别于主线
         else{
             if(strSection.equals("*"))
                 msgBody = new MsgBody(null, false);
@@ -53,7 +53,7 @@ public class Message {
     private void initHeader(String p2pStr){
         String strSection = U.getHeaderSec(p2pStr);
         if(strSection == null || strSection.equals(""))
-            throw new IllegalArgumentException("协议头不能为空");
+            header = null;//区别于主线
         else{
             ArrayList<Field> list = U.getFieldList(strSection, config);
             if(list.size() == 2){
@@ -144,97 +144,101 @@ public class Message {
     }
 
     private void encrypt(){
-        int msgLen = header.getLen() + msgBody.getLen();
-        byte[] stay = BU.subByte(mgr.getBuffer(), 0, mgr.Length() - msgLen);
-        byte[] before = BU.subByte(mgr.getBuffer(), mgr.Length() - msgLen, msgLen);
-        byte[] after = null;
-        switch (config.encrypt){
-            case NONE:
-                break;
-            case AES:
-                if(before.length < 12){
-                    throw new IllegalStateException("AES加密失败,数据小于12字节");
-                }
-                if((after = AESEncryptApplication.encryptEx(before, before.length)) == null){
-                    throw new IllegalStateException("AES加密失败");
-                }
-                else {
-                    mgr = new BufferMgr();
-                    mgr.putBuffer(BU.bytesMerger(stay, after));
-                    setMsgLen(after.length);
-                    int len = 0;
-                    if(longHeader != null)
-                        len += longHeader.getLen();
-                    setContentLength(after.length + len);
-                }
-                break;
-            case MHXY:
-                if((after = MHXY_UDP.encrypt(1, before, before.length)) == null)
-                    throw new IllegalStateException("mhxy_udp加密失败");
-                else {
-                    mgr = new BufferMgr();
-                    mgr.putBuffer(BU.bytesMerger(stay, after));
-                    setMsgLen(after.length);
-                    int len = 0;
-                    if(longHeader != null)
-                        len += longHeader.getLen();
-                    setContentLength(after.length + len);
-                }
-                break;
-            default:
+        if (config.encrypt != Encrypt.NONE){
+            if(header == null || msgBody == null)
                 return;
+            int msgLen = header.getLen() + msgBody.getLen();
+            byte[] stay = BU.subByte(mgr.getBuffer(), 0, mgr.Length() - msgLen);
+            byte[] before = BU.subByte(mgr.getBuffer(), mgr.Length() - msgLen, msgLen);
+            byte[] after = null;
+            switch (config.encrypt){
+                case AES:
+                    if(before.length < 12){
+                        throw new IllegalStateException("AES加密失败,数据小于12字节");
+                    }
+                    if((after = AESEncryptApplication.encryptEx(before, before.length)) == null){
+                        throw new IllegalStateException("AES加密失败");
+                    }
+                    else {
+                        mgr = new BufferMgr();
+                        mgr.putBuffer(BU.bytesMerger(stay, after));
+                        setMsgLen(after.length);
+                        int len = 0;
+                        if(longHeader != null)
+                            len += longHeader.getLen();
+                        setContentLength(after.length + len);
+                    }
+                    break;
+                case MHXY:
+                    if((after = MHXY_UDP.encrypt(1, before, before.length)) == null)
+                        throw new IllegalStateException("mhxy_udp加密失败");
+                    else {
+                        mgr = new BufferMgr();
+                        mgr.putBuffer(BU.bytesMerger(stay, after));
+                        setMsgLen(after.length);
+                        int len = 0;
+                        if(longHeader != null)
+                            len += longHeader.getLen();
+                        setContentLength(after.length + len);
+                    }
+                    break;
+                default:
+                    return;
+            }
         }
     }
 
 
     private void decrypt(){
-        int index = 0;
-        if(http != null){
-            index += BU.find(mgr.getBuffer(), "\r\n\r\n".getBytes());
-            index += 4;
-        }
-        if(longHeader != null){
-            index += 36;
-        }
+        if(config.encrypt != Encrypt.NONE){
+            int index = 0;
+            if(http != null){
+                index += BU.find(mgr.getBuffer(), "\r\n\r\n".getBytes());
+                if(index == -1)
+                    throw new IllegalStateException("回包中不存在HTTP协议");
+                index += 4;
+            }
+            if(longHeader != null){
+                index += 36;
+            }
 
-        byte[] stay = BU.subByte(mgr.getBuffer(), 0, index);
-        byte[] before = BU.subByte(mgr.getBuffer(), index, mgr.Length() - index);
-        byte[] after = null;
-        switch (config.encrypt){
-            case NONE:
-                break;
-            case AES:
-                if(before.length < 12){
-                    throw new IllegalStateException("AES解密失败,数据小于12字节");
-                }
-                if((after = AESEncryptApplication.decryptEx(before, before.length)) == null){
-                    throw new IllegalStateException("AES解密失败");
-                }
-                else {
-                    mgr = new BufferMgr();
-                    mgr.putBuffer(BU.bytesMerger(stay, after));
-                    setMsgLen(after.length);
-                    int len = 0;
-                    if(longHeader != null)
-                        len += longHeader.getLen();
-                    setContentLength(after.length + len);
-                }
-                break;
-            case MHXY:
-                if((after = MHXY_UDP.decrypt(before, before.length)) == null)
-                    throw new IllegalStateException("mhxy_udp解密失败");
-                else {
-                    mgr = new BufferMgr();
-                    mgr.putBuffer(BU.bytesMerger(stay, after));
-                    setMsgLen(after.length);
-                    int len = 0;
-                    if(longHeader != null)
-                        len += longHeader.getLen();
-                    setContentLength(after.length + len);
-                }
-                break;
-            default:
-                return;
+            byte[] stay = BU.subByte(mgr.getBuffer(), 0, index);
+            byte[] before = BU.subByte(mgr.getBuffer(), index, mgr.Length() - index);
+            byte[] after = null;
+            switch (config.encrypt){
+                case AES:
+                    if(before.length < 12){
+                        throw new IllegalStateException("AES解密失败,数据小于12字节");
+                    }
+                    if((after = AESEncryptApplication.decryptEx(before, before.length)) == null){
+                        throw new IllegalStateException("AES解密失败");
+                    }
+                    else {
+                        mgr = new BufferMgr();
+                        mgr.putBuffer(BU.bytesMerger(stay, after));
+                        setMsgLen(after.length);
+                        int len = 0;
+                        if(longHeader != null)
+                            len += longHeader.getLen();
+                        setContentLength(after.length + len);
+                    }
+                    break;
+                case MHXY:
+                    if((after = MHXY_UDP.decrypt(before, before.length)) == null)
+                        throw new IllegalStateException("mhxy_udp解密失败");
+                    else {
+                        mgr = new BufferMgr();
+                        mgr.putBuffer(BU.bytesMerger(stay, after));
+                        setMsgLen(after.length);
+                        int len = 0;
+                        if(longHeader != null)
+                            len += longHeader.getLen();
+                        setContentLength(after.length + len);
+                    }
+                    break;
+                default:
+                    return;
+            }
         }
     }
 
@@ -294,12 +298,16 @@ public class Message {
             if(!result.equal)
                 return result;
         }
-        result = this.header.compare(other.header);
-        if(!result.equal)
-            return result;
-        result = this.msgBody.compare(other.msgBody);
-        if(!result.equal)
-            return result;
+        if(this.header != null){
+            result = this.header.compare(other.header);
+            if(!result.equal)
+                return result;
+        }
+        if(this.msgBody != null){
+            result = this.msgBody.compare(other.msgBody);
+            if(!result.equal)
+                return result;
+        }
         return  new CompareResult(true, "");
     }
     private MsgHttpHeader http;
@@ -327,8 +335,10 @@ public class Message {
         message.msgBody.encode(message.mgr);*/
         Message message1 = new Message(input);
         System.out.println(BU.bytes2HexGoodLook(message1.encode()));
-        Message msg = new Message(input, BU.subByte(message1.mgr.getBuffer(), 0, message1.mgr.getBuffer().length - 1));
+        Message msg = new Message(input, new byte[]{});
         msg.decode();
+        System.out.println(BU.bytes2HexGoodLook(msg.mgr.getBuffer()));
+        System.out.println(message1.compare(msg).equal);
 /*
         Message message = new Message(input, BU.hex2Bytes("474554202f436f6e74656e742d4c656e6774683a2036340d0a0d0a00010000000200030000000000000004000000050000000000000006000000070000001c000000c80000000100000010f737b25be49bf056d18bd26524961d6d"));
         //message.decode();
