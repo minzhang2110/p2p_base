@@ -144,97 +144,101 @@ public class Message {
     }
 
     private void encrypt(){
-        int msgLen = header.getLen() + msgBody.getLen();
-        byte[] stay = BU.subByte(mgr.getBuffer(), 0, mgr.Length() - msgLen);
-        byte[] before = BU.subByte(mgr.getBuffer(), mgr.Length() - msgLen, msgLen);
-        byte[] after = null;
-        switch (config.encrypt){
-            case NONE:
-                break;
-            case AES:
-                if(before.length < 12){
-                    throw new IllegalStateException("AES加密失败,数据小于12字节");
-                }
-                if((after = AESEncryptApplication.encryptEx(before, before.length)) == null){
-                    throw new IllegalStateException("AES加密失败");
-                }
-                else {
-                    mgr = new BufferMgr();
-                    mgr.putBuffer(BU.bytesMerger(stay, after));
-                    setMsgLen(after.length);
-                    int len = 0;
-                    if(longHeader != null)
-                        len += longHeader.getLen();
-                    setContentLength(after.length + len);
-                }
-                break;
-            case MHXY:
-                if((after = MHXY_UDP.encrypt(1, before, before.length)) == null)
-                    throw new IllegalStateException("mhxy_udp加密失败");
-                else {
-                    mgr = new BufferMgr();
-                    mgr.putBuffer(BU.bytesMerger(stay, after));
-                    setMsgLen(after.length);
-                    int len = 0;
-                    if(longHeader != null)
-                        len += longHeader.getLen();
-                    setContentLength(after.length + len);
-                }
-                break;
-            default:
+        if (config.encrypt != Encrypt.NONE){
+            if(header == null || msgBody == null)
                 return;
+            int msgLen = header.getLen() + msgBody.getLen();
+            byte[] stay = BU.subByte(mgr.getBuffer(), 0, mgr.Length() - msgLen);
+            byte[] before = BU.subByte(mgr.getBuffer(), mgr.Length() - msgLen, msgLen);
+            byte[] after = null;
+            switch (config.encrypt){
+                case AES:
+                    if(before.length < 12){
+                        throw new IllegalStateException("AES加密失败,数据小于12字节");
+                    }
+                    if((after = AESEncryptApplication.encryptEx(before, before.length)) == null){
+                        throw new IllegalStateException("AES加密失败");
+                    }
+                    else {
+                        mgr = new BufferMgr();
+                        mgr.putBuffer(BU.bytesMerger(stay, after));
+                        setMsgLen(after.length);
+                        int len = 0;
+                        if(longHeader != null)
+                            len += longHeader.getLen();
+                        setContentLength(after.length + len);
+                    }
+                    break;
+                case MHXY:
+                    if((after = MHXY_UDP.encrypt(1, before, before.length)) == null)
+                        throw new IllegalStateException("mhxy_udp加密失败");
+                    else {
+                        mgr = new BufferMgr();
+                        mgr.putBuffer(BU.bytesMerger(stay, after));
+                        setMsgLen(after.length);
+                        int len = 0;
+                        if(longHeader != null)
+                            len += longHeader.getLen();
+                        setContentLength(after.length + len);
+                    }
+                    break;
+                default:
+                    return;
+            }
         }
     }
 
 
     private void decrypt(){
-        int index = 0;
-        if(http != null){
-            index += BU.find(mgr.getBuffer(), "\r\n\r\n".getBytes());
-            index += 4;
-        }
-        if(longHeader != null){
-            index += 36;
-        }
+        if(config.encrypt != Encrypt.NONE){
+            int index = 0;
+            if(http != null){
+                index += BU.find(mgr.getBuffer(), "\r\n\r\n".getBytes());
+                if(index == -1)
+                    throw new IllegalStateException("回包中不存在HTTP协议");
+                index += 4;
+            }
+            if(longHeader != null){
+                index += 36;
+            }
 
-        byte[] stay = BU.subByte(mgr.getBuffer(), 0, index);
-        byte[] before = BU.subByte(mgr.getBuffer(), index, mgr.Length() - index);
-        byte[] after = null;
-        switch (config.encrypt){
-            case NONE:
-                break;
-            case AES:
-                if(before.length < 12){
-                    throw new IllegalStateException("AES解密失败,数据小于12字节");
-                }
-                if((after = AESEncryptApplication.decryptEx(before, before.length)) == null){
-                    throw new IllegalStateException("AES解密失败");
-                }
-                else {
-                    mgr = new BufferMgr();
-                    mgr.putBuffer(BU.bytesMerger(stay, after));
-                    setMsgLen(after.length);
-                    int len = 0;
-                    if(longHeader != null)
-                        len += longHeader.getLen();
-                    setContentLength(after.length + len);
-                }
-                break;
-            case MHXY:
-                if((after = MHXY_UDP.decrypt(before, before.length)) == null)
-                    throw new IllegalStateException("mhxy_udp解密失败");
-                else {
-                    mgr = new BufferMgr();
-                    mgr.putBuffer(BU.bytesMerger(stay, after));
-                    setMsgLen(after.length);
-                    int len = 0;
-                    if(longHeader != null)
-                        len += longHeader.getLen();
-                    setContentLength(after.length + len);
-                }
-                break;
-            default:
-                return;
+            byte[] stay = BU.subByte(mgr.getBuffer(), 0, index);
+            byte[] before = BU.subByte(mgr.getBuffer(), index, mgr.Length() - index);
+            byte[] after = null;
+            switch (config.encrypt){
+                case AES:
+                    if(before.length < 12){
+                        throw new IllegalStateException("AES解密失败,数据小于12字节");
+                    }
+                    if((after = AESEncryptApplication.decryptEx(before, before.length)) == null){
+                        throw new IllegalStateException("AES解密失败");
+                    }
+                    else {
+                        mgr = new BufferMgr();
+                        mgr.putBuffer(BU.bytesMerger(stay, after));
+                        setMsgLen(after.length);
+                        int len = 0;
+                        if(longHeader != null)
+                            len += longHeader.getLen();
+                        setContentLength(after.length + len);
+                    }
+                    break;
+                case MHXY:
+                    if((after = MHXY_UDP.decrypt(before, before.length)) == null)
+                        throw new IllegalStateException("mhxy_udp解密失败");
+                    else {
+                        mgr = new BufferMgr();
+                        mgr.putBuffer(BU.bytesMerger(stay, after));
+                        setMsgLen(after.length);
+                        int len = 0;
+                        if(longHeader != null)
+                            len += longHeader.getLen();
+                        setContentLength(after.length + len);
+                    }
+                    break;
+                default:
+                    return;
+            }
         }
     }
 
