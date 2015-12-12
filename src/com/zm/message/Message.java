@@ -55,14 +55,21 @@ public class Message {
         if(strSection == null || strSection.equals(""))
             header = null;//区别于主线
         else{
-            ArrayList<Field> list = U.getFieldList(strSection, config);
-            if(list.size() == 2){
-                header = new MsgHeaderInter(list, true);
-                header.addBodyLen(msgBody.getLen());
+            if(strSection.equals("*"))
+                header = new MsgHeaderInter(null, false);
+            else if(strSection.equals("**"))
+                header = new MsgHeaderUDP(null, false);
+            else{
+                ArrayList<Field> list = U.getFieldList(strSection, config);
+                if(list.size() == 2){
+                    header = new MsgHeaderInter(list, true);
+                    header.addBodyLen(msgBody.getLen());
+                }
+                else if(list.size() == 1)
+                    header = new MsgHeaderUDP(list, true);
+                else throw new IllegalArgumentException("个数为" + list.size()+"的协议头不存在");
             }
-            else if(list.size() == 1)
-                header = new MsgHeaderUDP(list, true);
-            else throw new IllegalArgumentException("个数为" + list.size()+"的协议头不存在");
+
         }
 
     }
