@@ -55,8 +55,14 @@ public class Message {
         if(strSection == null || strSection.equals(""))
             header = null;//区别于主线
         else{
-            if(strSection.equals("*"))
+            if(strSection.equals("*")){
                 header = new MsgHeaderInter(null, false);
+                if(msgBody != null)
+                    header.addBodyLen(msgBody.getLen());
+                else
+                    throw new IllegalArgumentException("协议头和协议体必须成对存在");
+            }
+
             else if(strSection.equals("**"))
                 header = new MsgHeaderUDP(null, false);
             else{
