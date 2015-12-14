@@ -110,7 +110,8 @@ public class Message {
             if(msgBody !=null) len += msgBody.getLen();
             if(header != null) len += header.getLen();
             if(longHeader != null) len += longHeader.getLen();
-            http.addBodyLen(len);
+            if(len > 0)
+                http.addBodyLen(len);
         }
     }
 
