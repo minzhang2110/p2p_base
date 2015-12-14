@@ -53,18 +53,29 @@ public class Message {
     private void initHeader(String p2pStr){
         String strSection = U.getHeaderSec(p2pStr);
         if(strSection == null || strSection.equals(""))
-            throw new IllegalArgumentException("协议头不能为空");
+            header = null;//区别于主线
         else{
-            ArrayList<Field> list = U.getFieldList(strSection, config);
-            if(list.size() == 2){
-                header = new MsgHeaderInter(list, true);
-                header.addBodyLen(msgBody.getLen());
+            if(strSection.equals("*")){
+                header = new MsgHeaderInter(null, false);
+                if(msgBody != null)
+                    header.addBodyLen(msgBody.getLen());
+                else
+                    throw new IllegalArgumentException("协议头和协议体必须成对存在");
             }
-            else if(list.size() == 1)
-                header = new MsgHeaderUDP(list, true);
-            else throw new IllegalArgumentException("个数为" + list.size()+"的协议头不存在");
-        }
 
+            else if(strSection.equals("**"))
+                header = new MsgHeaderUDP(null, false);
+            else{
+                ArrayList<Field> list = U.getFieldList(strSection, config);
+                if(list.size() == 2){
+                    header = new MsgHeaderInter(list, true);
+                    header.addBodyLen(msgBody.getLen());
+                }
+                else if(list.size() == 1)
+                    header = new MsgHeaderUDP(list, true);
+                else throw new IllegalArgumentException("个数为" + list.size()+"的协议头不存在");
+            }
+        }
     }
     private void initLongHeader(String p2pStr){
         String strSection = U.getLHeaderSec(p2pStr);
