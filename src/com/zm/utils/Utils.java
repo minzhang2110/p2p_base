@@ -179,8 +179,13 @@ public class Utils {
                 Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE );
         Matcher matcher = pattern.matcher(p2pStr);
         while(matcher.find()){
-            if(matcher.group(1).trim().toLowerCase().equals(section))
+            if(matcher.group(1).trim().toLowerCase().equals(section)){
+                for(String tmp : HTTPHEADER){//HTTP头部不忽略中间空行
+                    if(tmp.equals(section))
+                        return matcher.group(2).trim();
+                }
                 return matcher.group(2).trim().replaceAll("\r\n\r\n","\r\n").replaceAll("\n\n", "\n");
+            }
         }
         return null;
     }
@@ -188,8 +193,15 @@ public class Utils {
     public static String getHttpHeaderSec(String p2pStr){
         String ret = null;
         for(int i = 0; i < HTTPHEADER.length; i++){
-            if((ret = getSection(p2pStr, HTTPHEADER[i])) != null)
-                return ret;
+            if((ret = getSection(p2pStr, HTTPHEADER[i])) != null){
+                String strs[] = ret.split("\n");
+                ret = "";
+                for(String tmp : strs){
+                    ret += tmp.trim() + "\r\n";
+                }
+                return ret.trim();
+            }
+
         }
         return ret;
     }
@@ -286,8 +298,7 @@ public class Utils {
         System.out.println(getBodySec(input));
         System.out.println(getSection(input, "123"));
         System.out.println(getMsgConfig(input));*/
-        System.out.println(getSection(input, "config"));
-        System.out.println(getMsgConfig(input));
-        System.out.println(strToField("1@re_sult=2", new MsgConfig()).getName());
+        System.out.println(getHttpHeaderSec(input));
+        System.out.println(BU.bytes2HexGoodLook(getHttpHeaderSec(input).getBytes()));
     }
 }

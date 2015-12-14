@@ -58,10 +58,11 @@ public class MsgHttpHeader {
 
     public MsgHttpHeader(String strValue, boolean valueCare){
         if(strValue == null)
-            this.strValue = "\r\n\r\n";
+            this.strValue = "";
+        else if(strValue.indexOf("\r\n\r\n") == -1)
+            this.strValue = strValue.trim() + "\r\n\r\n";
         else{
-            strValue = strValue.trim();
-            this.strValue = strValue + "\r\n\r\n";
+            this.strValue = strValue;
         }
         this.valueCare = valueCare;
     }
