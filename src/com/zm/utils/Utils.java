@@ -113,7 +113,7 @@ public class Utils {
         String type = "";
         String name = "";
         String value = "";
-        Pattern pattern = Pattern.compile("^([\\^\\~\\!]?)([1248aihs])@([0-9a-z_]+)=([0-9a-z:\\.\\/-\\\\]+|\\*)$",
+        Pattern pattern = Pattern.compile("^([\\^\\~\\!]?)([1248aihs])@([0-9a-z_]+)=([0-9a-z\\.-]+|\\*)$",
                 Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE);
         Matcher matcher = pattern.matcher(tmp);
         if(matcher.find()){
@@ -286,8 +286,8 @@ public class Utils {
         System.out.println(getBodySec(input));
         System.out.println(getSection(input, "123"));
         System.out.println(getMsgConfig(input));*/
-        //System.out.println(getSection(input, "config"));
-        //System.out.println(getMsgConfig(input));
-        System.out.println(strToField("s@re_sult=http://www.ba\\idu.com", new MsgConfig()).getName());
+        System.out.println(getSection(input, "config"));
+        System.out.println(getMsgConfig(input));
+        System.out.println(strToField("1@re_sult=2", new MsgConfig()).getName());
     }
 }
