@@ -33,7 +33,7 @@ abstract public class MsgHeader {
             len += list.get(i).getLen();
         return len;
     }
-    abstract public boolean addBodyLen(int len);
+    abstract public boolean addBodyLen(int len, boolean valueCare);
     public CompareResult compare(MsgHeader other){
         if(other == null)
             return new CompareResult(false, "对象为空");

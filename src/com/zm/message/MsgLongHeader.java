@@ -37,7 +37,7 @@ public class MsgLongHeader {
 
     public boolean addBodyLen(int len){
         if(list.size() == fieldSize.length){
-            Field msgLen = new FourBytes("MsgLen", "" + len);//网络序
+            Field msgLen = new FourBytes("MsgLen", "", true, false);//网络序,为避免BODY中有*的情况，暂时不对长连接头的msglen字段比较
             list.add(msgLen);
             return true;
         }
