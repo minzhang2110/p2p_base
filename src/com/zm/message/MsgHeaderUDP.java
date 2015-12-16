@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class MsgHeaderUDP extends MsgHeader {
     @Override
-    public boolean addBodyLen(int len) {
+    public boolean addBodyLen(int len, boolean valueCare) {
         return true;
     }
 

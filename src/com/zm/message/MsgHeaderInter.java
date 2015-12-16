@@ -10,9 +10,9 @@ import java.util.ArrayList;
  */
 public class MsgHeaderInter extends MsgHeader {
     @Override
-    public boolean addBodyLen(int len) {
+    public boolean addBodyLen(int len, boolean valueCare) {
         if(list.size() == fieldSize.length){
-            Field msgLen = new FourBytes("Bodylen", "" + len);//网络序
+            Field msgLen = new FourBytes("Bodylen", "" + len, true, valueCare);//网络序
             list.add(msgLen);
             return true;
         }

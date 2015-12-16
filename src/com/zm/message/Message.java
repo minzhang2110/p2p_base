@@ -17,6 +17,10 @@ import java.util.regex.Pattern;
 
 /**
  * Created by Administrator on 2015/11/22.
+ * 已知问题：
+ * 一、在字段中有*时，预期的Content-Length，msglen，bodylen与实际可能不同，现在的处理为：
+ * 1.不比较msglen
+ * 2.如果body中有任何一个为*，即不关心值，则bodylen也不关心
  */
 public class Message {
 
@@ -57,8 +61,14 @@ public class Message {
         else{
             if(strSection.equals("*")){
                 header = new MsgHeaderInter(null, false);
-                if(msgBody != null)
-                    header.addBodyLen(msgBody.getLen());
+                if(msgBody != null){//如果body中有任何一个为*，即不关心值，则bodylen也不关心
+                    boolean valueCare = true;
+                    for (Field field : msgBody.list){
+                        if(!field.isValueCare())
+                            valueCare = false;
+                    }
+                    header.addBodyLen(msgBody.getLen(), valueCare);
+                }
                 else
                     throw new IllegalArgumentException("协议头和协议体必须成对存在");
             }
@@ -69,15 +79,24 @@ public class Message {
                 ArrayList<Field> list = U.getFieldList(strSection, config);
                 if(list.size() == 2){
                     header = new MsgHeaderInter(list, true);
-                    header.addBodyLen(msgBody.getLen());
+                    if(msgBody != null){//如果body中有任何一个为*，即不关心值，则bodylen也不关心
+                        boolean valueCare = true;
+                        for (Field field : msgBody.list){
+                            if(!field.isValueCare()){
+                                valueCare = false;
+                                break;
+                            }
+                        }
+                        header.addBodyLen(msgBody.getLen(), valueCare);
+                    }
+                    else
+                        throw new IllegalArgumentException("协议头和协议体必须成对存在");
                 }
                 else if(list.size() == 1)
                     header = new MsgHeaderUDP(list, true);
                 else throw new IllegalArgumentException("个数为" + list.size()+"的协议头不存在");
             }
-
         }
-
     }
     private void initLongHeader(String p2pStr){
         String strSection = U.getLHeaderSec(p2pStr);
