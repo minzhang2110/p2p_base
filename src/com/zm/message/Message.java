@@ -44,58 +44,23 @@ public class Message {
     private void initBody(String p2pStr){
         String strSection = U.getBodySec(p2pStr);
         if(strSection == null || strSection.equals(""))
-            msgBody = null;//区别于主线
+            msgBody = null;
         else{
-            if(strSection.equals("*"))
-                msgBody = new MsgBody(null, false);
-            else{
-                ArrayList<Field>  list = U.getFieldList(strSection, config);
-                msgBody = new MsgBody(list, true);
-            }
+            ArrayList<Field>  list = U.getFieldList(strSection, config);
+            msgBody = new MsgBody(list, true);
         }
     }
     private void initHeader(String p2pStr){
         String strSection = U.getHeaderSec(p2pStr);
         if(strSection == null || strSection.equals(""))
-            header = null;//区别于主线
+            header = null;
         else{
-            if(strSection.equals("*")){
-                header = new MsgHeaderInter(null, false);
-                if(msgBody != null){//如果body中有任何一个为*，即不关心值，则bodylen也不关心
-                    boolean valueCare = true;
-                    for (Field field : msgBody.list){
-                        if(!field.isValueCare())
-                            valueCare = false;
-                    }
-                    header.addBodyLen(msgBody.getLen(), valueCare);
-                }
-                else
-                    throw new IllegalArgumentException("协议头和协议体必须成对存在");
-            }
-
-            else if(strSection.equals("**"))
-                header = new MsgHeaderUDP(null, false);
-            else{
-                ArrayList<Field> list = U.getFieldList(strSection, config);
-                if(list.size() == 2){
-                    header = new MsgHeaderInter(list, true);
-                    if(msgBody != null){//如果body中有任何一个为*，即不关心值，则bodylen也不关心
-                        boolean valueCare = true;
-                        for (Field field : msgBody.list){
-                            if(!field.isValueCare()){
-                                valueCare = false;
-                                break;
-                            }
-                        }
-                        header.addBodyLen(msgBody.getLen(), valueCare);
-                    }
-                    else
-                        throw new IllegalArgumentException("协议头和协议体必须成对存在");
-                }
-                else if(list.size() == 1)
-                    header = new MsgHeaderUDP(list, true);
-                else throw new IllegalArgumentException("个数为" + list.size()+"的协议头不存在");
-            }
+            ArrayList<Field>  list = U.getFieldList(strSection, config);
+            header = new MsgHeader(list, true);
+            int len = 0;
+            if(msgBody != null)
+                len +=msgBody.getLen();
+            header.setBodyLen(len);
         }
     }
     private void initLongHeader(String p2pStr){
@@ -103,16 +68,12 @@ public class Message {
         if(strSection == null || strSection.equals(""))
             longHeader = null;
         else{
-            if(strSection.equals("*"))
-                longHeader = new MsgLongHeader(null, false);
-            else{
-                ArrayList<Field> list = U.getFieldList(strSection, config);
-                longHeader = new MsgLongHeader(list, true);
-            }
+            ArrayList<Field> list = U.getFieldList(strSection, config);
+            longHeader = new MsgLongHeader(list, true);
             int len = 0;
             if(msgBody !=null) len += msgBody.getLen();
             if(header != null) len += header.getLen();
-            longHeader.addBodyLen(len);
+            longHeader.setBodyLen(len);
         }
     }
 
@@ -143,12 +104,10 @@ public class Message {
             header.encode(mgr);
         if(msgBody != null)
             msgBody.encode(mgr);
-        encrypt();
         return mgr.getBuffer();
     }
 
     public void decode(){
-        decrypt();
         try{
             if(http != null)
                 http.decode(mgr);
@@ -174,145 +133,6 @@ public class Message {
         if(msgBody != null)
             ret += msgBody;
         return ret;
-    }
-
-    private void encrypt(){
-        if (config.encrypt != Encrypt.NONE){
-            if(header == null || msgBody == null)
-                return;
-            int msgLen = header.getLen() + msgBody.getLen();
-            byte[] stay = BU.subByte(mgr.getBuffer(), 0, mgr.Length() - msgLen);
-            byte[] before = BU.subByte(mgr.getBuffer(), mgr.Length() - msgLen, msgLen);
-            byte[] after = null;
-            switch (config.encrypt){
-                case AES:
-                    if(before.length < 12){
-                        throw new IllegalStateException("AES加密失败,数据小于12字节");
-                    }
-                    if((after = AESEncryptApplication.encryptEx(before, before.length)) == null){
-                        throw new IllegalStateException("AES加密失败");
-                    }
-                    else {
-                        mgr = new BufferMgr();
-                        mgr.putBuffer(BU.bytesMerger(stay, after));
-                        setMsgLen(after.length);
-                        int len = 0;
-                        if(longHeader != null)
-                            len += longHeader.getLen();
-                        setContentLength(after.length + len);
-                    }
-                    break;
-                case MHXY:
-                    if((after = MHXY_UDP.encrypt(1, before, before.length)) == null)
-                        throw new IllegalStateException("mhxy_udp加密失败");
-                    else {
-                        mgr = new BufferMgr();
-                        mgr.putBuffer(BU.bytesMerger(stay, after));
-                        setMsgLen(after.length);
-                        int len = 0;
-                        if(longHeader != null)
-                            len += longHeader.getLen();
-                        setContentLength(after.length + len);
-                    }
-                    break;
-                default:
-                    return;
-            }
-        }
-    }
-
-
-    private void decrypt(){
-        if(config.encrypt != Encrypt.NONE){
-            int index = 0;
-            if(http != null){
-                index += BU.find(mgr.getBuffer(), "\r\n\r\n".getBytes());
-                if(index == -1)
-                    throw new IllegalStateException("回包中不存在HTTP协议");
-                index += 4;
-            }
-            if(longHeader != null){
-                index += 36;
-            }
-
-            byte[] stay = BU.subByte(mgr.getBuffer(), 0, index);
-            byte[] before = BU.subByte(mgr.getBuffer(), index, mgr.Length() - index);
-            byte[] after = null;
-            switch (config.encrypt){
-                case AES:
-                    if(before.length < 12){
-                        throw new IllegalStateException("AES解密失败,数据小于12字节");
-                    }
-                    if((after = AESEncryptApplication.decryptEx(before, before.length)) == null){
-                        throw new IllegalStateException("AES解密失败");
-                    }
-                    else {
-                        mgr = new BufferMgr();
-                        mgr.putBuffer(BU.bytesMerger(stay, after));
-                        setMsgLen(after.length);
-                        int len = 0;
-                        if(longHeader != null)
-                            len += longHeader.getLen();
-                        setContentLength(after.length + len);
-                    }
-                    break;
-                case MHXY:
-                    if((after = MHXY_UDP.decrypt(before, before.length)) == null)
-                        throw new IllegalStateException("mhxy_udp解密失败");
-                    else {
-                        mgr = new BufferMgr();
-                        mgr.putBuffer(BU.bytesMerger(stay, after));
-                        setMsgLen(after.length);
-                        int len = 0;
-                        if(longHeader != null)
-                            len += longHeader.getLen();
-                        setContentLength(after.length + len);
-                    }
-                    break;
-                default:
-                    return;
-            }
-        }
-    }
-
-    private boolean setMsgLen(int msgLen){
-        if(longHeader == null)
-            return false;
-        int index = 0;
-        if(http != null)
-            index = BU.find(mgr.getBuffer(), "\r\n\r\n".getBytes());
-        index += 4 + 32;
-        byte[] part1 = BU.subByte(mgr.getBuffer(), 0, index);
-        byte[] part3 = BU.subByte(mgr.getBuffer(), index + 4, mgr.Length() - index - 4);
-        mgr = new BufferMgr();
-        mgr.putBuffer(part1);
-        new FourBytes("", "" + msgLen).encode(mgr);
-        mgr.putBuffer(part3);
-        return true;
-    }
-
-    private boolean setContentLength(int contentLength){
-        if(header == null)
-            return false;
-        Pattern pattern = Pattern.compile("([\\s\\S]*Content-Length: )([0-9]+)");
-        Matcher matcher = pattern.matcher(new String(mgr.getBuffer()));
-        if(matcher.find()){
-            byte[] part1 = matcher.group(1).getBytes();
-            byte[] part2 = ("" + contentLength).getBytes();
-            byte[] part3 = null;
-            int index = BU.find(mgr.getBuffer(), "\r\n\r\n".getBytes());
-            if(index == -1)
-                return false;
-            else {
-                part3 = BU.subByte(mgr.getBuffer(), index, mgr.Length() - index);
-            }
-            mgr = new BufferMgr();
-            mgr.putBuffer(part1);
-            mgr.putBuffer(part2);
-            mgr.putBuffer(part3);
-            return true;
-         }
-        return false;
     }
 
     public CompareResult compare(Message other){
