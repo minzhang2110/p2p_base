@@ -300,5 +300,6 @@ public class Utils {
         System.out.println(getMsgConfig(input));*/
         System.out.println(getHttpHeaderSec(input));
         System.out.println(BU.bytes2HexGoodLook(getHttpHeaderSec(input).getBytes()));
+        "123".getBytes();
     }
 }
