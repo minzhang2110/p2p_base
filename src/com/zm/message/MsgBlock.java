@@ -42,7 +42,7 @@ public class MsgBlock {
         for(int i = 0; i < list.size(); i++){
             if(list.get(i).getName().toLowerCase().indexOf("len") != -1){
                 for(int j = i + 1; j < list.size(); j++)
-                    len += list.get(i).getLen();
+                    len += list.get(j).getLen();
                 list.get(i).setOriginValue("" + len);
                 return true;
             }
