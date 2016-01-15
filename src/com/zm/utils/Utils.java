@@ -174,7 +174,8 @@ public class Utils {
 
     //不存在返回null
     public static String getSection(String p2pStr, String section){
-        p2pStr = p2pStr.replaceAll("#.*[\r|\r\n]", "\r\n");
+        p2pStr = p2pStr.replaceAll("#.*[\r|\r\n]", "\r\n");//去除注释
+        p2pStr = p2pStr.replaceAll("#.*$", "\r\n");//去除注释
         Pattern pattern = Pattern.compile("\\[([^\\[|\\]]+)\\]([^\\[|\\]]*)",
                 Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE );
         Matcher matcher = pattern.matcher(p2pStr);
@@ -286,20 +287,9 @@ public class Utils {
         System.out.println(parseLong("0"));
         System.out.println(parseLong("9223372036854775807"));
         System.out.println(parseLong("18446744073709551615"));*/
-        String input = "";
-        String tmp;
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("d:\\test.txt")));
-        while((tmp = in.readLine()) != null)
-            input += tmp + "\r\n";
-        /*System.out.println(getHttpHeaderSec(input));
-        System.out.println(getConfigSec(input));
-        System.out.println(getLHeaderSec(input));
-        System.out.println(getHeaderSec(input));
-        System.out.println(getBodySec(input));
-        System.out.println(getSection(input, "123"));
-        System.out.println(getMsgConfig(input));*/
-        System.out.println(getHttpHeaderSec(input));
-        System.out.println(BU.bytes2HexGoodLook(getHttpHeaderSec(input).getBytes()));
-        "123".getBytes();
+        String input = "[b]\n" +
+                "1@result = 108\n" +
+                "#非0后不发送后面的字段";
+        System.out.println(getSection(input, "b"));
     }
 }
