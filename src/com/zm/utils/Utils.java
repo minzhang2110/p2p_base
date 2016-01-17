@@ -166,6 +166,8 @@ public class Utils {
             case 'a':
                 data = new Array(name, value, ifNetOrder, ifValueCare);
                 break;
+            case 'b':
+                data = new HttpBody(name, value, ifNetOrder, ifValueCare);
             default:
                 throw new IllegalStateException("数据类型错误，不存在" + type + "@类型数据");
         }

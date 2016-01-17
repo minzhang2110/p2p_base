@@ -44,11 +44,20 @@ public class BufferMgr {
 
     //首先解码Http
     public byte[] getHttpHeader(){
-        int index = BU.find(buffer, "\r\n\r\n".getBytes());
+        int index = BU.findFirst(buffer, "\r\n\r\n".getBytes());
         if(index == -1)
             return null;
         decodeIndex = index + 4;
         return BU.subByte(buffer, 0, index);
+    }
+
+    public byte[]  getAllLeft(){
+        if(decodeIndex < 0 || decodeIndex >= Length())
+            return null;
+        byte[] ret = null;
+        ret = BU.subByte(buffer, decodeIndex, Length() -decodeIndex);
+        decodeIndex = Length();
+        return ret;
     }
 
     public void putBuffer(byte[] data){
