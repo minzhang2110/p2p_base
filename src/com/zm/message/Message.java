@@ -281,40 +281,31 @@ public class Message {
     private MsgConfig config;
 
     public static void main(String[] args) throws IOException {
+        /*
         String input = "";
         String tmp;
         BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("d:\\test.txt")));
         while((tmp = in.readLine()) != null)
             input += tmp + "\r\n";
-
-
-        //message.mgr.setBuffer(new byte[]{});
-        //System.out.println(BU.bytes2HexGoodLook(message.encode()));
-/*
-        message.initLongHeader(input);
-        message.longHeader.addBodyLen(128);
-        message.longHeader.encode(message.mgr);
-        message.initBody(input);
-        message.msgBody.encode(message.mgr);*/
-        Message message1 = new Message(input);
-        System.out.println(BU.bytes2HexGoodLook(message1.encode()));
-        Message msg = new Message(input, new byte[]{});
-        msg.decode();
-        System.out.println(BU.bytes2HexGoodLook(msg.mgr.getBuffer()));
-        System.out.println(message1.compare(msg).equal);
-/*
-        Message message = new Message(input, BU.hex2Bytes("474554202f436f6e74656e742d4c656e6774683a2036340d0a0d0a00010000000200030000000000000004000000050000000000000006000000070000001c000000c80000000100000010f737b25be49bf056d18bd26524961d6d"));
-        //message.decode();
-        System.out.println("======================================");
-        System.out.println(BU.bytes2HexGoodLook(message.mgr.getBuffer()));
-        message.decode();
-        System.out.println(BU.bytes2HexGoodLook(message.mgr.getBuffer()));
-
-
-        CompareResult result = message1.compare(message);
-        System.out.println(result.equal);
-        System.out.println(result.msg);*/
-
+        */
+        String input = "[head]\n" +
+                "4@ProtocolVer = 0\n" +
+                "4@Sequence = 0\n" +
+                "4@BodyLen = *\n" +
+                "2@CmdId = 109\n" +
+                "\n" +
+                "\n" +
+                "[body]\n" +
+                "1@Result = 0\n" +
+                "4@ClusterId = 2001\n" +
+                "1@HotVP = 1\n" +
+                "4@LimitSpeed = 4194304\n" +
+                "a@CdnSrvInfo = 1\n" +
+                "4@State = 1\n" +
+                "i@PublicIp = 192.168.202.81\n" +
+                "i@PrivateIp = 192.168.202.81";
+        Message msg = new Message(input);
+        System.out.println(BU.bytes2HexGoodLook(msg.encode()));
 
     }
 }
