@@ -288,24 +288,26 @@ public class Message {
         while((tmp = in.readLine()) != null)
             input += tmp + "\r\n";
         */
-        String input = "[head]\n" +
-                "4@ProtocolVer = 0\n" +
-                "4@Sequence = 0\n" +
-                "4@BodyLen = *\n" +
-                "2@CmdId = 109\n" +
+        /*
+        String input = "[http]\n" +
+                "POST / HTTP/1.1\n" +
                 "\n" +
-                "\n" +
-                "[body]\n" +
-                "1@Result = 0\n" +
-                "4@ClusterId = 2001\n" +
-                "1@HotVP = 1\n" +
-                "4@LimitSpeed = 4194304\n" +
-                "a@CdnSrvInfo = 1\n" +
-                "4@State = 1\n" +
-                "i@PublicIp = 192.168.202.81\n" +
-                "i@PrivateIp = 192.168.202.81";
+                "[b]\n" +
+                "b@httpbody = 123123";
         Message msg = new Message(input);
-        System.out.println(BU.bytes2HexGoodLook(msg.encode()));
-
+        //System.out.println(BU.bytes2HexGoodLook(msg.encode()));
+        System.out.println(new String(msg.encode()));*/
+        String input = "[http]\n" +
+                "*\n" +
+                "\n" +
+                "[b]\n" +
+                "b@httpbody = *";
+        byte[] buffer = ("POST / HTTP/1.1\r\n" +
+                "Content-Length: 6\r\n" +
+                "\r\n" +
+                "123123").getBytes();
+        Message msg = new Message(input, buffer);
+        msg.decode();
+        System.out.println(msg);
     }
 }
