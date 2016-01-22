@@ -113,7 +113,7 @@ public class Utils {
         String type = "";
         String name = "";
         String value = "";
-        Pattern pattern = Pattern.compile("^([\\^\\~\\!]?)([1248aihs])@([0-9a-z_]+)=([0-9a-z:\\-\\.\\/\\\\]+|\\*)$",
+        Pattern pattern = Pattern.compile("^([\\^\\~\\!]?)([1248aihsb])@([0-9a-z_]+)=([0-9a-z&=:\\-\\.\\/\\\\]+|\\*)$",
                 Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE);
         Matcher matcher = pattern.matcher(tmp);
         if(matcher.find()){
@@ -168,6 +168,7 @@ public class Utils {
                 break;
             case 'b':
                 data = new HttpBody(name, value, ifNetOrder, ifValueCare);
+                break;
             default:
                 throw new IllegalStateException("数据类型错误，不存在" + type + "@类型数据");
         }
@@ -289,9 +290,7 @@ public class Utils {
         System.out.println(parseLong("0"));
         System.out.println(parseLong("9223372036854775807"));
         System.out.println(parseLong("18446744073709551615"));*/
-        String input = "[b]\n" +
-                "1@result = 108\n" +
-                "#非0后不发送后面的字段";
-        System.out.println(getSection(input, "b"));
+        String input = "s@logdata = clusterid=2001&";
+        System.out.println(strToField(input, new MsgConfig()));
     }
 }

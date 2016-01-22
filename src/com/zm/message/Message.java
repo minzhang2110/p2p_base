@@ -172,7 +172,7 @@ public class Message {
             if(http != null){
                 index += BU.findFirst(mgr.getBuffer(), "\r\n\r\n".getBytes());
                 if(index == -1)
-                    throw new IllegalStateException("回包中不存在HTTP协议");
+                    throw new IllegalStateException("包体中不存在HTTP协议头");
                 index += 4;
             }
 
@@ -209,7 +209,7 @@ public class Message {
     }
 
     private boolean setContentLength(int contentLength){
-        if(header == null)
+        if(http == null)
             return false;
         Pattern pattern = Pattern.compile("([\\s\\S]*Content-Length: )([0-9]+)");
         Matcher matcher = pattern.matcher(new String(mgr.getBuffer()));
@@ -297,17 +297,25 @@ public class Message {
         Message msg = new Message(input);
         //System.out.println(BU.bytes2HexGoodLook(msg.encode()));
         System.out.println(new String(msg.encode()));*/
-        String input = "[http]\n" +
-                "*\n" +
+        String input = "[config]\n" +
+                "encrypt = aes\n" +
                 "\n" +
-                "[b]\n" +
-                "b@httpbody = *";
-        byte[] buffer = ("POST / HTTP/1.1\r\n" +
-                "Content-Length: 6\r\n" +
-                "\r\n" +
-                "123123").getBytes();
-        Message msg = new Message(input, buffer);
-        msg.decode();
+                "[http]\n" +
+                "POST /cdnsrv.php HTTP/1.1\n" +
+                "Accept: */* \n" +
+                "Accept-Language: zh-cn \n" +
+                "Host: 192.168.200.37\n" +
+                "User-Agent: Mozilla/4.0 (compatible; MSIE 6.0;windows NT 5.1; SV1)\n" +
+                "Connection: keep-alive\n" +
+                "\n" +
+                "[body]\n" +
+                "4@proversion = 20160104\n" +
+                "4@seqnum = 0\n" +
+                "4@bodylen = *\n" +
+                "1@comdid = 0\n" +
+                "s@logdata = clusterid=8888&reqtmscli=0&peercntcli=0&accepttmscli=0&rejecttmscli=0&reqdatatmscli=0&reqdataoktmscli=0&datalen=0&dlpeercnt=0&time=2&reqtmscdnsrv=0&suctmscdnsrv=0&failtmscdnsrv=0&waitreqtms=0&overspeedtms=0&reqclustertms=0&reqclusteroktms=0";
+        Message msg = new Message(input);
+        System.out.println(new String(msg.encode()));
         System.out.println(msg);
     }
 }
