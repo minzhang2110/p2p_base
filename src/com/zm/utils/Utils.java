@@ -271,7 +271,7 @@ public class Utils {
 
     public static void main(String[] args) throws IOException {
         /*
-        System.out.println(parseByte("-128"));
+        System.out.println(parseByte("-128"));i
         System.out.println(parseByte("0"));
         System.out.println(parseByte("127"));
         System.out.println(parseByte("255"));

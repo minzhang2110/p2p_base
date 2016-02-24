@@ -96,6 +96,7 @@ public class Message {
     }
 
     public byte[] encode(){
+        mgr = new BufferMgr();
         if(http != null)
             http.encode(mgr);
         if(longHeader != null)
