@@ -72,7 +72,7 @@ abstract public class Field {
         if(this == other || ! this.valueCare || ! other.valueCare)
             return new CompareResult(true, "");
 
-        if(this.strValue.equals(other.strValue))
+        if(this.strValue.toLowerCase().equalsIgnoreCase(other.strValue))
             return new CompareResult(true, "");
         else
             return new CompareResult(false, "值不同，预期" + this.getName() + "是" + this +
