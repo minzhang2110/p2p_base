@@ -4,6 +4,7 @@ import com.zm.Field.*;
 import com.zm.encryption.Encrypt;
 import com.zm.message.BufferMgr;
 import com.zm.message.MsgConfig;
+import com.zm.message.RequestMessage;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -136,6 +137,9 @@ public class Utils {
         if(value.equals("*")){
             ifValueCare = false;
             value = "";
+        }else if(value.indexOf("super.") != -1){
+            value = RequestMessage.getReqValueByName(value.substring(value.indexOf(".") + 1));
+            ifValueCare = false;
         }
         else
             ifValueCare = true;

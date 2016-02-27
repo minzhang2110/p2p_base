@@ -275,9 +275,9 @@ public class Message {
         return  new CompareResult(true, "");
     }
     private MsgHttpHeader http;
-    private MsgLongHeader longHeader;
-    private MsgHeader header;
-    private MsgBody msgBody;
+    public  MsgLongHeader longHeader;
+    public  MsgHeader header;
+    public MsgBody msgBody;
     private BufferMgr mgr;
     private MsgConfig config;
 
@@ -298,25 +298,24 @@ public class Message {
         Message msg = new Message(input);
         //System.out.println(BU.bytes2HexGoodLook(msg.encode()));
         System.out.println(new String(msg.encode()));*/
-        String input = "[config]\n" +
-                "encrypt = aes\n" +
-                "\n" +
-                "[http]\n" +
-                "POST /cdnsrv.php HTTP/1.1\n" +
-                "Accept: */* \n" +
-                "Accept-Language: zh-cn \n" +
-                "Host: 192.168.200.37\n" +
-                "User-Agent: Mozilla/4.0 (compatible; MSIE 6.0;windows NT 5.1; SV1)\n" +
-                "Connection: keep-alive\n" +
-                "\n" +
+        String input =
                 "[body]\n" +
                 "4@proversion = 20160104\n" +
-                "4@seqnum = 0\n" +
+                "4@seqnum = 9999\n" +
                 "4@bodylen = *\n" +
                 "1@comdid = 0\n" +
                 "s@logdata = clusterid=8888&reqtmscli=0&peercntcli=0&accepttmscli=0&rejecttmscli=0&reqdatatmscli=0&reqdataoktmscli=0&datalen=0&dlpeercnt=0&time=2&reqtmscdnsrv=0&suctmscdnsrv=0&failtmscdnsrv=0&waitreqtms=0&overspeedtms=0&reqclustertms=0&reqclusteroktms=0";
         Message msg = new Message(input);
-        System.out.println(new String(msg.encode()));
-        System.out.println(msg);
+        msg.encode();
+        RequestMessage.registerAsReqMsg(msg);
+
+        String input2 = "[h]\n" +
+                "4@proversion = super.proversion\n" +
+                "4@seqnum = super.seqnum\n" +
+                "4@bodylen = *\n" +
+                "1@comdid = 99\n";
+        Message msg2 = new Message(input2);
+        msg2.encode();
+        System.out.println(msg2);
     }
 }
