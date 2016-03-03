@@ -274,6 +274,11 @@ public class Message {
         }
         return  new CompareResult(true, "");
     }
+
+    public int dataCntLeftToDecode(){
+        return mgr.dataCntLeftToDecode();
+    }
+
     private MsgHttpHeader http;
     public  MsgLongHeader longHeader;
     public  MsgHeader header;
@@ -304,18 +309,18 @@ public class Message {
                 "4@seqnum = 9999\n" +
                 "4@bodylen = *\n" +
                 "1@comdid = 0\n" +
-                "s@logdata = clusterid=8888&reqtmscli=0&peercntcli=0&accepttmscli=0&rejecttmscli=0&reqdatatmscli=0&reqdataoktmscli=0&datalen=0&dlpeercnt=0&time=2&reqtmscdnsrv=0&suctmscdnsrv=0&failtmscdnsrv=0&waitreqtms=0&overspeedtms=0&reqclustertms=0&reqclusteroktms=0";
+                "s@logdata = 123";
         Message msg = new Message(input);
-        msg.encode();
-        RequestMessage.registerAsReqMsg(msg);
+
 
         String input2 = "[h]\n" +
                 "4@proversion = super.proversion\n" +
                 "4@seqnum = super.seqnum\n" +
                 "4@bodylen = *\n" +
-                "1@comdid = 99\n";
-        Message msg2 = new Message(input2);
-        msg2.encode();
+                "1@comdid = 99\n s@logdata = *";
+        Message msg2 = new Message(input2, msg.encode());
+        msg2.decode();
         System.out.println(msg2);
+        System.out.println(msg2.dataCntLeftToDecode());
     }
 }

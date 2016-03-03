@@ -64,6 +64,11 @@ public class BufferMgr {
         buffer = BU.bytesMerger(buffer, data);
     }
 
+    public int dataCntLeftToDecode(){
+        return (buffer.length - decodeIndex) > 0
+                ? (buffer.length - decodeIndex) : 0;
+    }
+
     private byte[] buffer;
     private int decodeIndex;//解码位置
 }
