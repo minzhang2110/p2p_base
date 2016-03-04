@@ -4,11 +4,13 @@ import com.sun.xml.internal.messaging.saaj.packaging.mime.Header;
 import com.zm.Field.CompareResult;
 import com.zm.Field.Field;
 import com.zm.Field.FourBytes;
+import com.zm.Field.OneByte;
 import com.zm.encryption.AESEncryptApplication;
 import com.zm.encryption.Encrypt;
 import com.zm.encryption.MHXY_UDP;
 import com.zm.utils.BU;
 import com.zm.utils.U;
+import sun.font.FontUtilities;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -279,6 +281,38 @@ public class Message {
         return mgr.dataCntLeftToDecode();
     }
 
+    public int getCmdID(){
+        ArrayList<Field> list = null;
+        Field field = null;
+        if(header != null){
+            list = header.list;
+            for(int i = 0; i < list.size(); i++){
+                field = list.get(i);
+                if(field.getName().toLowerCase().equals("cmdid") && field.getClass() == OneByte.class)
+                    return U.parseByte(field.getStrValue());
+            }
+        }
+
+        if(msgBody != null){
+            list = msgBody.list;
+            for(int i = 0; i < list.size(); i++){
+                field = list.get(i);
+                if(field.getName().toLowerCase().equals("cmdid") && field.getClass() == OneByte.class)
+                    return U.parseByte(field.getStrValue());
+            }
+        }
+
+        if(longHeader != null){
+            list = longHeader.list;
+            for(int i = 0; i < list.size(); i++){
+                field = list.get(i);
+                if(field.getName().toLowerCase().equals("cmdid") && field.getClass() == OneByte.class)
+                    return U.parseByte(field.getStrValue());
+            }
+        }
+        return 0;
+    }
+
     private MsgHttpHeader http;
     public  MsgLongHeader longHeader;
     public  MsgHeader header;
@@ -287,28 +321,13 @@ public class Message {
     private MsgConfig config;
 
     public static void main(String[] args) throws IOException {
-        /*
-        String input = "";
-        String tmp;
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("d:\\test.txt")));
-        while((tmp = in.readLine()) != null)
-            input += tmp + "\r\n";
-        */
-        /*
-        String input = "[http]\n" +
-                "POST / HTTP/1.1\n" +
-                "\n" +
-                "[b]\n" +
-                "b@httpbody = 123123";
-        Message msg = new Message(input);
-        //System.out.println(BU.bytes2HexGoodLook(msg.encode()));
-        System.out.println(new String(msg.encode()));*/
+
         String input =
                 "[body]\n" +
                 "4@proversion = 20160104\n" +
                 "4@seqnum = 9999\n" +
                 "4@bodylen = *\n" +
-                "1@comdid = 0\n" +
+                "1@cmdid = 99\n" +
                 "s@logdata = 123";
         Message msg = new Message(input);
 
@@ -317,10 +336,11 @@ public class Message {
                 "4@proversion = super.proversion\n" +
                 "4@seqnum = super.seqnum\n" +
                 "4@bodylen = *\n" +
-                "1@comdid = 99\n s@logdata = *";
+                "1@cmdid = 99\n s@logdata = *";
         Message msg2 = new Message(input2, msg.encode());
         msg2.decode();
-        System.out.println(msg2);
-        System.out.println(msg2.dataCntLeftToDecode());
+        //System.out.println(msg2);
+        System.out.println(msg.getCmdID());
+        System.out.println(msg2.getCmdID());
     }
 }
