@@ -50,6 +50,7 @@ public class Message {
         else{
             ArrayList<Field>  list = U.getFieldList(strSection, config);
             msgBody = new MsgBody(list, true);
+            msgBody.setBodyLen(0);
         }
     }
     private void initHeader(String p2pStr){
