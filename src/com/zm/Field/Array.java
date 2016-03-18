@@ -10,29 +10,34 @@ import java.util.ArrayList;
 
 /**
  * Created by zhangmin on 2015/11/13.
+ * 根据valueCare决定是否比较数组大小，
+ *
+ * 无论Array的valueCare是什么，都需要比较数组
  */
 public class Array extends Field {
 
     @Override
     public void encode(BufferMgr bufferMgr) {
-        try{
-            value = U.parseInt(originValue);
-        }catch (Exception e){
-            throw new IllegalStateException("[" + name + "] 编码失败 : " + e.getMessage());
-        }
-        strValue = "" + value;
+        //实际编码的是数组的长度
+        value = groupList.size();
         if(netByte)
             bufferMgr.putBuffer(BU.int2Bytes(value));
         else
             bufferMgr.putBuffer(BU.int2Bytes_h(value));
-        //根据value更改数组
-        balanceGroupList(value);
         for(int i = 0; i < groupList.size(); i++){
             Field[] tmp = groupList.get(i);
             for(int j = 0; j < tmp.length; j++){
                 tmp[j].encode(bufferMgr);
             }
         }
+
+        //在compare时比较originValue
+        try{
+            value = U.parseInt(originValue);
+        }catch (Exception e){
+            throw new IllegalStateException("[" + name + "] 编码失败 : " + e.getMessage());
+        }
+        strValue = "" + value;
     }
 
     @Override
@@ -72,15 +77,20 @@ public class Array extends Field {
             return new CompareResult(false, "类型不同，预期" + this.getName() + "是" + this.getClass() +
                     "，而实际" + other.getName()+ "是" + other.getClass());
 
-        if(this == other || ! this.valueCare || ! other.valueCare)
+        if(this == other)
             return new CompareResult(true, "");
 
+        if(this.valueCare && other.valueCare)
+            if(!this.strValue.equals(other.strValue))
+                return new CompareResult(false, "数组个数不同，预期" + this.getName() + "是" + this.strValue +
+                        "个，而实际" + other.getName()+ "是" + other.strValue + "个");
+
         ArrayList<Field[]> otherList = ((Array) other).groupList;
-        if(this.groupList.size() != otherList.size()){
+/*        if(this.groupList.size() != otherList.size()){
             return new CompareResult(false, "数组个数不同，预期" + this.getName() + "是" + this.groupList.size() +
                     "个，而实际" + other.getName()+ "是" + otherList.size() + "个");
         }
-
+*/
         CompareResult result = null;
         for(int i = 0; i < this.groupList.size(); i++){
             Field[] myGroup = groupList.get(i);
