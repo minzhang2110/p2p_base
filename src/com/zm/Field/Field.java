@@ -10,7 +10,7 @@ import com.zm.message.BufferMgr;
  * strValue和value必须保持一致，和len一起随时更新
  * 字段比较是strValue的比较
  */
-abstract public class Field {
+abstract public class Field{
 
     //编码
     abstract public void encode(BufferMgr bufferMgr);

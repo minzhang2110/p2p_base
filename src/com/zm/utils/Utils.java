@@ -168,7 +168,8 @@ public class Utils {
                 data = new StringBytes(name, value, ifNetOrder, ifValueCare);
                 break;
             case 'a':
-                data = new Array(name, value, ifNetOrder, ifValueCare);
+                //data = new Array(name, value, ifNetOrder, ifValueCare);Array作为新数组
+                data = new FourBytes(name, value, ifNetOrder, ifValueCare);//兼容以前的类型
                 break;
             case 'b':
                 data = new HttpBody(name, value, ifNetOrder, ifValueCare);

@@ -7,7 +7,7 @@ import com.zm.utils.U;
 /**
  * Created by zhangmin on 2015/11/13.
  */
-public class FourBytes extends Field {
+public class FourBytes extends Field{
     @Override
     public void encode(BufferMgr bufferMgr) {
         try{

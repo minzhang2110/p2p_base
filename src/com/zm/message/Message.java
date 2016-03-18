@@ -98,33 +98,40 @@ public class Message {
         }
     }
 
+    //每个包只允许encode或decode一次
     public byte[] encode(){
-        mgr = new BufferMgr();
-        if(http != null)
-            http.encode(mgr);
-        if(longHeader != null)
-            longHeader.encode(mgr);
-        if(header != null)
-            header.encode(mgr);
-        if(msgBody != null)
-            msgBody.encode(mgr);
-        encrypt();
+        if(!encodedOrDecoded){
+            if(http != null)
+                http.encode(mgr);
+            if(longHeader != null)
+                longHeader.encode(mgr);
+            if(header != null)
+                header.encode(mgr);
+            if(msgBody != null)
+                msgBody.encode(mgr);
+            encrypt();
+            encodedOrDecoded = true;
+        }
         return mgr.getBuffer();
     }
 
+    //每个包只允许encode或decode一次
     public void decode(){
-        decrypt();
-        try{
-            if(http != null)
-                http.decode(mgr);
-            if(longHeader != null)
-                longHeader.decode(mgr);
-            if(header != null)
-                header.decode(mgr);
-            if(msgBody != null)
-                msgBody.decode(mgr);
-        }catch (Exception e){
-            throw new IllegalStateException(e.getMessage() + "\r\n" + this.toString());
+        if(!encodedOrDecoded){
+            decrypt();
+            try{
+                if(http != null)
+                    http.decode(mgr);
+                if(longHeader != null)
+                    longHeader.decode(mgr);
+                if(header != null)
+                    header.decode(mgr);
+                if(msgBody != null)
+                    msgBody.decode(mgr);
+            }catch (Exception e){
+                throw new IllegalStateException(e.getMessage() + "\r\n" + this.toString());
+            }
+            encodedOrDecoded = true;
         }
     }
 
@@ -320,9 +327,10 @@ public class Message {
     public MsgBody msgBody;
     private BufferMgr mgr;
     private MsgConfig config;
+    private Boolean encodedOrDecoded;//编码或解码过了
 
     public static void main(String[] args) throws IOException {
-
+/*
         String input =
                 "[body]\n" +
                 "4@proversion = 20160104\n" +
@@ -342,6 +350,16 @@ public class Message {
         msg2.decode();
         //System.out.println(msg2);
         System.out.println(msg.getCmdID());
-        System.out.println(msg2.getCmdID());
+        System.out.println(msg2.getCmdID());*/
+
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        list.add(1);list.add(2);list.add(3);
+        list.add(list.indexOf(1), 8);
+
+        for(int i = 0; i < list.size(); i++){
+            System.out.println(i + ":" + list.get(i));
+        }
+
+
     }
 }
