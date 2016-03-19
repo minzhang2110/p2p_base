@@ -61,7 +61,14 @@ public class Array extends Field {
 
     @Override
     public int getLen() {
-        return 0;
+        int len  = 4;
+        for(int i = 0; i < groupList.size(); i++){
+            Field[] tmp = groupList.get(i);
+            for(int j = 0; j < tmp.length; j++){
+                len += tmp[j].getLen();
+            }
+        }
+        return len;
     }
 
     @Override
@@ -81,23 +88,24 @@ public class Array extends Field {
             return new CompareResult(true, "");
 
         if(this.valueCare && other.valueCare)
-            if(!this.strValue.equals(other.strValue))
-                return new CompareResult(false, "数组个数不同，预期" + this.getName() + "是" + this.strValue +
+            if(!this.strValue.equals(other.strValue))//检查指定数组个数与实际数组个数是否相同
+                return new CompareResult(false, "指定数组个数与实际不同，指定" + this.getName() + "是" + this.strValue +
                         "个，而实际" + other.getName()+ "是" + other.strValue + "个");
 
         ArrayList<Field[]> otherList = ((Array) other).groupList;
-/*        if(this.groupList.size() != otherList.size()){
-            return new CompareResult(false, "数组个数不同，预期" + this.getName() + "是" + this.groupList.size() +
+        if(this.groupList.size() > otherList.size()){//检查编写数组个数应比实际小
+            return new CompareResult(false, "编写数组个数大于实际，编写" + this.getName() + "是" + this.groupList.size() +
                     "个，而实际" + other.getName()+ "是" + otherList.size() + "个");
         }
-*/
+
         CompareResult result = null;
         for(int i = 0; i < this.groupList.size(); i++){
             Field[] myGroup = groupList.get(i);
             Field[] otherGroup = otherList.get(i);
-            if(myGroup.length != otherGroup.length)
+            //由于预期和实际的包都来自同一个消息串，所以这种情况不会发生
+            /*if(myGroup.length != otherGroup.length)
                 return new CompareResult(false, "单个数组中元素个数不同，预期" + this.getName() + "是" + myGroup.length +
-                        "个，而实际" + other.getName()+ "是" + otherGroup.length + "个");
+                        "个，而实际" + other.getName()+ "是" + otherGroup.length + "个");*/
             for(int j = 0; j < myGroup.length; j++){
                 result = myGroup[j].compare(otherGroup[j]);
                 if(!result.equal)
@@ -107,19 +115,18 @@ public class Array extends Field {
         return new CompareResult(true, "");
     }
 
-    public String toString(){//////////////////////////////
+    public String toString(){
         StringBuilder ret = new StringBuilder();
-        for(int j=0; j<this.groupList.size();j++){
-            Field[] test = this.groupList.get(j);
-            for(int i=0; i<test.length; i++){
-                ret.append(test[i].getName() + "\t"
-                        + test[i] + "\t"
-                        + test[i].netByte + "\t"
-                        + test[i].valueCare + "\t"
-                        + test[i].getClass() + "\r\n");
+        ret.append(groupList.size() + "\r\n");
+        for(int i = 0; i < groupList.size(); i++){
+            Field[] tmp = groupList.get(i);
+            ret.append("-----------------\r\n");
+            for(int j = 0; j < tmp.length; j++){
+                ret.append(tmp[j].getName() + "=" + tmp[j] + "\r\n");
             }
-            ret.append("==========================\r\n");
+
         }
+        ret.append("--------------------");
         return ret.toString();
     }
 
@@ -164,7 +171,7 @@ public class Array extends Field {
     }
 
     public static void main(String[] args){
-        Array array = new Array("array", "2");
+        Array array = new Array("studentList", "2");
         Field[] group1 = new Field[2];
         group1[0] = new FourBytes("haha", "1");
         group1[1] =new TwoBytes("heihei", "2");
@@ -174,25 +181,26 @@ public class Array extends Field {
         array.groupList.add(group1);
         array.groupList.add(group2);
 
-        Array array2 = new Array("array", "5");
+        Array array2 = new Array("studentList2", "2");
         Field[] group3 = new Field[2];
-        group3[0] = new FourBytes("hahaha", "0");
-        group3[1] =new TwoBytes("heiheihei", "0");
-        //Field[] group4 = new Field[2];
-        //group4[0] = new FourBytes("hahaha1", "3");
-        //group4[1] =new TwoBytes("heiheihei1", "4");
+        group3[0] = new FourBytes("hahaha", "1");
+        group3[1] =new TwoBytes("heiheihei", "2");
+        Field[] group4 = new Field[2];
+        group4[0] = new FourBytes("hahaha1", "3");
+        group4[1] =new TwoBytes("heiheihei1", "4");
         array2.groupList.add(group3);
-        //array2.groupList.add(group4);
+        array2.groupList.add(group4);
 
         BufferMgr bufferMgr = new BufferMgr();
         array.encode(bufferMgr);
         array2.decode(bufferMgr);
+        //array2.encode(bufferMgr);
 
         System.out.println(BU.bytes2HexGoodLook(bufferMgr.getBuffer()));
         System.out.println(array.compare(array2));
 
-        System.out.println(array);
-        System.out.println(array2);
+        System.out.print(array.getName() + "=" + array);
+        //System.out.println(array2);
 
     }
 
