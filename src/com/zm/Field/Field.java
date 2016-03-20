@@ -96,6 +96,10 @@ abstract public class Field{
         this.valueCare = valueCare;
     }
 
+    public String getOriginValue() {
+        return originValue;
+    }
+
     //名称
     protected String name = "";
     //原始值，可能与转换值不同，如"255"，在单字节的转换值为"-1"

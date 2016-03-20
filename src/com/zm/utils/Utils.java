@@ -108,7 +108,7 @@ public class Utils {
         return fields;
     }
 
-    private static Field strToField(String str, MsgConfig config){
+    public static Field strToField(String str, MsgConfig config){
         String tmp = str.trim().replaceAll("\\s", "");
         String hostOrder = "";
         String type = "";
