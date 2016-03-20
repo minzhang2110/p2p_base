@@ -13,6 +13,8 @@ import java.util.ArrayList;
  * 根据valueCare决定是否比较数组大小，
  *
  * 无论Array的valueCare是什么，都需要比较数组
+ *
+ * 为了打印更加直观，加入了scope来判断第几层数组
  */
 public class Array extends Field {
 
@@ -101,32 +103,52 @@ public class Array extends Field {
         CompareResult result = null;
         for(int i = 0; i < this.groupList.size(); i++){
             Field[] myGroup = groupList.get(i);
-            Field[] otherGroup = otherList.get(i);
-            //由于预期和实际的包都来自同一个消息串，所以这种情况不会发生
-            /*if(myGroup.length != otherGroup.length)
-                return new CompareResult(false, "单个数组中元素个数不同，预期" + this.getName() + "是" + myGroup.length +
-                        "个，而实际" + other.getName()+ "是" + otherGroup.length + "个");*/
-            for(int j = 0; j < myGroup.length; j++){
-                result = myGroup[j].compare(otherGroup[j]);
-                if(!result.equal)
-                    return result;
+            for(int j = 0; j < otherList.size(); j++){
+                Field[] otherGroup = otherList.get(j);
+                result = compareGroup(myGroup, otherGroup);
+                if(result.equal)
+                    break;
+            }
+            if(!result.equal){
+                return new CompareResult(false, this.getName() + "预期的第" + (i+1) + "个数组,在实际"+ other.getName() + "中没有找到");
             }
         }
         return new CompareResult(true, "");
     }
 
-    public String toString(){
+    private CompareResult compareGroup(Field[] my, Field[] other){
+        CompareResult result = null;
+        for(int i = 0; i < my.length; i++){
+            result = my[i].compare(other[i]);
+            if(!result.equal)
+                return result;
+        }
+        return result;
+    }
+
+    public String toString(int scope){
         StringBuilder ret = new StringBuilder();
-        ret.append(groupList.size() + "\r\n");
+        ret.append(groupList.size() + "\r\n");//打印的是实际的数组个数，与预期的可能不一致
+        int nextScope = scope + 1;
         for(int i = 0; i < groupList.size(); i++){
             Field[] tmp = groupList.get(i);
-            ret.append("-----------------\r\n");
+            ret.append(getCharString(' ', scope*3) + getCharString('-', 30-scope*3) + "\r\n");
             for(int j = 0; j < tmp.length; j++){
-                ret.append(tmp[j].getName() + "=" + tmp[j] + "\r\n");
+                if(tmp[j] instanceof Array)
+                    ret.append(getCharString(' ', scope*3) + (tmp[j].getName() + "=" + ((Array)tmp[j]).toString(nextScope) + "\r\n"));
+                else
+                    ret.append(getCharString(' ', scope*3) + tmp[j].getName() + "=" + tmp[j] + "\r\n");
             }
-
         }
-        ret.append("--------------------");
+        ret.append(getCharString(' ', scope*3)  + getCharString('-', 30-scope*3));
+        return ret.toString();
+    }
+
+    private String getCharString(char c, int len){
+        StringBuilder ret = new StringBuilder();
+        for(int i=0; i<len; i++){
+            ret.append(c);
+        }
         return ret.toString();
     }
 
@@ -176,7 +198,7 @@ public class Array extends Field {
         group1[0] = new FourBytes("haha", "1");
         group1[1] =new TwoBytes("heihei", "2");
         Field[] group2 = new Field[2];
-        group2[0] = new FourBytes("haha1", "3");
+        group2[0] = new FourBytes("haha1", "9");
         group2[1] =new TwoBytes("heihei1", "4");
         array.groupList.add(group1);
         array.groupList.add(group2);
@@ -184,7 +206,8 @@ public class Array extends Field {
         Array array2 = new Array("studentList2", "2");
         Field[] group3 = new Field[2];
         group3[0] = new FourBytes("hahaha", "1");
-        group3[1] =new TwoBytes("heiheihei", "2");
+        group3[1] = new TwoBytes("heiheihei", "2");
+        //group3[1] = array;
         Field[] group4 = new Field[2];
         group4[0] = new FourBytes("hahaha1", "3");
         group4[1] =new TwoBytes("heiheihei1", "4");
@@ -193,13 +216,14 @@ public class Array extends Field {
 
         BufferMgr bufferMgr = new BufferMgr();
         array.encode(bufferMgr);
-        array2.decode(bufferMgr);
+        array2.encode(bufferMgr);
         //array2.encode(bufferMgr);
 
         System.out.println(BU.bytes2HexGoodLook(bufferMgr.getBuffer()));
         System.out.println(array.compare(array2));
 
-        System.out.print(array.getName() + "=" + array);
+        System.out.println(array.getName() + "=" + array.toString(1));
+        System.out.println(array2.getName() + "=" + array2.toString(1));
         //System.out.println(array2);
 
     }

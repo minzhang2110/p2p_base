@@ -1,5 +1,6 @@
 package com.zm.message;
 
+import com.zm.Field.Array;
 import com.zm.Field.CompareResult;
 import com.zm.Field.Field;
 
@@ -25,7 +26,10 @@ public class MsgBlock {
     public String toString(){
         String ret = "";
         for(int i = 0; i < list.size(); i++){
-            ret += list.get(i).getName() + "=" + list.get(i) + "\r\n";
+            if(list.get(i) instanceof Array)
+                ret += list.get(i).getName() + "=" + ((Array)list.get(i)).toString(1) + "\r\n";
+            else
+                ret += list.get(i).getName() + "=" + list.get(i) + "\r\n";
         }
         return  ret;
     }
