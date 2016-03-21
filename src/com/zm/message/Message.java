@@ -1,20 +1,18 @@
 package com.zm.message;
 
-import com.sun.xml.internal.messaging.saaj.packaging.mime.Header;
 import com.zm.Field.CompareResult;
 import com.zm.Field.Field;
-import com.zm.Field.FourBytes;
+
 import com.zm.Field.OneByte;
 import com.zm.encryption.AESEncryptApplication;
 import com.zm.encryption.Encrypt;
 import com.zm.encryption.MHXY_UDP;
 import com.zm.utils.BU;
 import com.zm.utils.U;
-import sun.font.FontUtilities;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
