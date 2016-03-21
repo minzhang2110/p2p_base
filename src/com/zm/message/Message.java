@@ -337,7 +337,7 @@ public class Message {
         //Message msg = new Message(input);
         //System.out.println(BU.bytes2HexGoodLook(msg.encode()));
         //System.out.println(msg);
-        System.out.print(U.getSection(input, "b"));
+        System.out.print(U.getSection(input, "h"));
 
 
 /*
