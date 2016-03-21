@@ -13,6 +13,7 @@ import com.zm.utils.U;
 import java.io.*;
 import java.util.ArrayList;
 
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -334,10 +335,17 @@ public class Message {
         char[] tmp = new char[4096];
         int len = reader.read(tmp);
         String input = new String(tmp, 0 ,len);
-        //Message msg = new Message(input);
-        //System.out.println(BU.bytes2HexGoodLook(msg.encode()));
-        //System.out.println(msg);
-        System.out.print(U.getSection(input, "h"));
+
+        Message msg = new Message(input);
+        System.out.println(BU.bytes2HexGoodLook(msg.encode()));
+        System.out.println(msg);
+
+        Message msg2 = new Message(input, msg.encode());
+        msg2.decode();
+        System.out.println(msg2);
+
+        System.out.println(msg.compare(msg2));
+
 
 
 /*

@@ -10,6 +10,7 @@ import java.io.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -98,17 +99,34 @@ public class Utils {
         return config;
     }
 
+    //将一组json数据转换成一行
+    private static String jsonProcess(String in){
+        StringBuilder ret = new StringBuilder();
+        Stack<Character> jsonStack = new Stack<Character>();
+        for(int i = 0; i < in.length(); i++){
+            char c = in.charAt(i);
+            if( c == '{')
+                jsonStack.push(c);
+            else if(c == '}')
+                jsonStack.pop();
+            if(jsonStack.empty() || !String.valueOf(c).trim().equals(""))
+                ret.append(c);
+        }
+        return ret.toString();
+    }
+
     public static ArrayList<Field> getFieldList(String secValue, MsgConfig config){
         ArrayList<Field> fields = new ArrayList<Field>();
 
-        String[] strFields = secValue.split("\n");
+        String[] strFields = jsonProcess(secValue).split("\n");
         for(int i = 0; i < strFields.length; i++){
-            if(strFields[i].trim().equals(""))
+            String tmp = strFields[i].trim();
+            if(tmp.equals(""))
                 continue;
-            if(strFields[i].charAt(0) == '{')///////////////////////////
-                fields.add(ArrayJson.parseJsonToArray(strFields[i], config));
+            if(tmp.charAt(0) == '{')///////////////////////////
+                fields.add(ArrayJson.parseJsonToArray(tmp, config));
             else
-                fields.add(strToField(strFields[i], config));
+                fields.add(strToField(tmp, config));
         }
         return fields;
     }
