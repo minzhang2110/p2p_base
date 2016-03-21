@@ -9,6 +9,7 @@ import com.zm.message.RequestMessage;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -99,11 +100,15 @@ public class Utils {
 
     public static ArrayList<Field> getFieldList(String secValue, MsgConfig config){
         ArrayList<Field> fields = new ArrayList<Field>();
+
         String[] strFields = secValue.split("\n");
         for(int i = 0; i < strFields.length; i++){
             if(strFields[i].trim().equals(""))
                 continue;
-            fields.add(strToField(strFields[i], config));
+            if(strFields[i].charAt(0) == '{')///////////////////////////
+                fields.add(ArrayJson.parseJsonToArray(strFields[i], config));
+            else
+                fields.add(strToField(strFields[i], config));
         }
         return fields;
     }
@@ -180,21 +185,23 @@ public class Utils {
         return data;
     }
 
-    //不存在返回null
+    //不存在返回null,返回trim()，不去除空行
     public static String getSection(String p2pStr, String section){
         p2pStr = p2pStr.replaceAll("#.*[\r|\r\n]", "\r\n");//去除注释
         p2pStr = p2pStr.replaceAll("#.*$", "\r\n");//去除注释
-        Pattern pattern = Pattern.compile("\\[([^\\[|\\]]+)\\]([^\\[|\\]]*)",
+        //HashMap<String, String> sectionMap = new HashMap<String, String>();
+        String[] sectionValue = p2pStr.split("\\[([a-z]{1,10})\\]");
+        Pattern pattern = Pattern.compile("\\[([a-z]{1,10})\\]",
                 Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE );
         Matcher matcher = pattern.matcher(p2pStr);
+        int index = 0;
         while(matcher.find()){
-            if(matcher.group(1).trim().toLowerCase().equals(section)){
-                for(String tmp : HTTPHEADER){//HTTP头部不忽略中间空行
-                    if(tmp.equals(section))
-                        return matcher.group(2).trim();
-                }
-                return matcher.group(2).trim().replaceAll("\r\n\r\n","\r\n").replaceAll("\n\n", "\n");
-            }
+            String value = (sectionValue[index].trim().equals("")?sectionValue[++index]:sectionValue[index]);
+            //sectionMap.put(matcher.group(1), value.trim());
+            String name = matcher.group(1);
+            if(name.toLowerCase().trim().equals(section))
+                return value.trim();
+            index++;
         }
         return null;
     }
@@ -295,7 +302,6 @@ public class Utils {
         System.out.println(parseLong("0"));
         System.out.println(parseLong("9223372036854775807"));
         System.out.println(parseLong("18446744073709551615"));*/
-        String input = "s@logdata = clusterid=2001&";
-        System.out.println(strToField(input, new MsgConfig()));
+
     }
 }

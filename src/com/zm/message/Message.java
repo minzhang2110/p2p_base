@@ -14,6 +14,7 @@ import sun.font.FontUtilities;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -327,20 +328,21 @@ public class Message {
     public MsgBody msgBody;
     private BufferMgr mgr;
     private MsgConfig config;
-    private Boolean encodedOrDecoded;//编码或解码过了
+    private Boolean encodedOrDecoded = false;//编码或解码过了
 
     public static void main(String[] args) throws IOException {
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File("e://test.txt"))));
+        char[] tmp = new char[4096];
+        int len = reader.read(tmp);
+        String input = new String(tmp, 0 ,len);
+        //Message msg = new Message(input);
+        //System.out.println(BU.bytes2HexGoodLook(msg.encode()));
+        //System.out.println(msg);
+        System.out.print(U.getSection(input, "b"));
+
+
 /*
-        String input =
-                "[body]\n" +
-                "4@proversion = 20160104\n" +
-                "4@seqnum = 9999\n" +
-                "4@bodylen = *\n" +
-                "1@cmdid = 99\n" +
-                "s@logdata = 123";
-        Message msg = new Message(input);
-
-
         String input2 = "[h]\n" +
                 "4@proversion = super.proversion\n" +
                 "4@seqnum = super.seqnum\n" +
@@ -351,14 +353,6 @@ public class Message {
         //System.out.println(msg2);
         System.out.println(msg.getCmdID());
         System.out.println(msg2.getCmdID());*/
-
-        ArrayList<Integer> list = new ArrayList<Integer>();
-        list.add(1);list.add(2);list.add(3);
-        list.add(list.indexOf(1), 8);
-
-        for(int i = 0; i < list.size(); i++){
-            System.out.println(i + ":" + list.get(i));
-        }
 
 
     }
