@@ -5,7 +5,9 @@ import com.zm.utils.BU;
 import com.zm.utils.U;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 /**
@@ -89,10 +91,16 @@ public class Array extends Field {
         if(this == other)
             return new CompareResult(true, "");
 
-        if(this.valueCare && other.valueCare)
+        if(this.valueCare && other.valueCare){
             if(!this.strValue.equals(other.strValue))//检查指定数组个数与实际数组个数是否相同
                 return new CompareResult(false, "指定数组个数与实际不同，指定" + this.getName() + "是" + this.strValue +
                         "个，而实际" + other.getName()+ "是" + other.strValue + "个");
+            else if(this.strValue.equals("0")){//两个数组个数相同且都为0，则不再往下比较
+                return new CompareResult(true, "");
+            }
+        }
+
+
 
         ArrayList<Field[]> otherList = ((Array) other).groupList;
         if(this.groupList.size() > otherList.size()){//检查编写数组个数应比实际小
@@ -162,10 +170,11 @@ public class Array extends Field {
         }
         if(expectNum > factNum){
             for(int i = factNum; i < expectNum; i++)
-                groupList.add(copyGroupByFirst(i));
+                groupList.add(copyGroupByFirst(this, i));
         }
     }
 
+/*
     private Field[] copyGroupByFirst(int num){
         Field[] firstGroup = groupList.get(0);
         Field[] copyGroup = new Field[firstGroup.length];
@@ -177,6 +186,29 @@ public class Array extends Field {
 
                 copyGroup[i] = (Field) constructor.newInstance(new Object[]{firstGroup[i].getName() + num,
                         "", firstGroup[i].netByte, false});
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return copyGroup;
+    }
+*/
+
+    private Field[] copyGroupByFirst(Array src, int num){
+        Field[] firstGroup = src.groupList.get(0);
+        Field[] copyGroup = new Field[firstGroup.length];
+        try {
+            for(int i = 0; i < firstGroup.length; i++){
+                Class fieldType = firstGroup[i].getClass();
+                Constructor constructor = fieldType.getConstructor(new Class[]{String.class,
+                        String.class, Boolean.TYPE, Boolean.TYPE});
+
+                copyGroup[i] = (Field) constructor.newInstance(new Object[]{firstGroup[i].getName() + num,
+                        "", firstGroup[i].netByte, false});
+
+                if(copyGroup[i] instanceof Array){
+                    ((Array)copyGroup[i]).groupList.add(copyGroupByFirst((Array)firstGroup[i], num));
+                }
             }
         }catch (Exception e){
             e.printStackTrace();
