@@ -20,9 +20,8 @@ import java.util.regex.Pattern;
 /**
  * Created by Administrator on 2015/11/22.
  * 已知问题：
- * 一、在字段中有*时，预期的Content-Length，msglen，bodylen与实际可能不同，现在的处理为：
- * 1.不比较msglen
- * 2.如果body中有任何一个为*，即不关心值，则bodylen也不关心
+ * 一、在字段中有*时，预期的Content-Length，msglen，bodylen与实际可能不同
+ * 现在的msglen和bodylen的值最好为*
  */
 public class Message {
 
@@ -62,7 +61,7 @@ public class Message {
             header = new MsgHeader(list, true);
             int len = 0;
             if(msgBody != null)
-                len +=msgBody.getLen();
+                len += msgBody.getLen();
             header.setBodyLen(len);
         }
     }

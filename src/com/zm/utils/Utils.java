@@ -123,7 +123,7 @@ public class Utils {
             String tmp = strFields[i].trim();
             if(tmp.equals(""))
                 continue;
-            if(tmp.charAt(0) == '{')///////////////////////////
+            if(tmp.charAt(0) == '{')
                 fields.add(ArrayJson.parseJsonToArray(tmp, config));
             else
                 fields.add(strToField(tmp, config));
