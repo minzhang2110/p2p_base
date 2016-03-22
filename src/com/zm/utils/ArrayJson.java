@@ -31,7 +31,7 @@ public class ArrayJson {
         try {
              ret = arrayJsonToArray(aj, config);
         }catch (Exception e){
-            throw new IllegalArgumentException("可能json语法错误: " + json);
+            throw new IllegalArgumentException(e.getMessage() + "： 也可能json语法错误: " + json);
         }
 
         return ret;
