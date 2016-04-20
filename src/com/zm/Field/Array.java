@@ -125,7 +125,7 @@ public class Array extends Field {
     }
 
     private CompareResult compareGroup(Field[] my, Field[] other){
-        CompareResult result = null;
+        CompareResult result = new CompareResult(false, "");
         for(int i = 0; i < my.length; i++){
             result = my[i].compare(other[i]);
             if(!result.equal)
@@ -184,7 +184,7 @@ public class Array extends Field {
                         String.class, Boolean.TYPE, Boolean.TYPE});
 
                 copyGroup[i] = (Field) constructor.newInstance(new Object[]{firstGroup[i].getName() + num,
-                        "", firstGroup[i].netByte, false});
+                        "", firstGroup[i].netByte, firstGroup[i].valueCare});
 
                 if(copyGroup[i] instanceof Array){
                     ((Array)copyGroup[i]).groupList.add(copyGroupByFirst((Array)firstGroup[i], num));
