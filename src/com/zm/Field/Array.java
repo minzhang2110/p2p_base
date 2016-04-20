@@ -174,26 +174,6 @@ public class Array extends Field {
         }
     }
 
-/*
-    private Field[] copyGroupByFirst(int num){
-        Field[] firstGroup = groupList.get(0);
-        Field[] copyGroup = new Field[firstGroup.length];
-        try {
-            for(int i = 0; i < firstGroup.length; i++){
-                Class fieldType = firstGroup[i].getClass();
-                Constructor constructor = fieldType.getConstructor(new Class[]{String.class,
-                        String.class, Boolean.TYPE, Boolean.TYPE});
-
-                copyGroup[i] = (Field) constructor.newInstance(new Object[]{firstGroup[i].getName() + num,
-                        "", firstGroup[i].netByte, false});
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return copyGroup;
-    }
-*/
-
     private Field[] copyGroupByFirst(Array src, int num){
         Field[] firstGroup = src.groupList.get(0);
         Field[] copyGroup = new Field[firstGroup.length];

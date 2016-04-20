@@ -137,7 +137,7 @@ public class Utils {
         String type = "";
         String name = "";
         String value = "";
-        Pattern pattern = Pattern.compile("^([\\^\\~\\!]?)([1248aihsb])@([0-9a-z_]+)=([0-9a-z&=:\\-\\.\\/\\\\]+|\\*)$",
+        Pattern pattern = Pattern.compile("^([\\^\\~\\!]?)([1248aihsb])@([0-9a-z_]+)=(\\S+)$",
                 Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE);
         Matcher matcher = pattern.matcher(tmp);
         if(matcher.find()){
