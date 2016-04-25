@@ -339,11 +339,11 @@ public class Message {
         System.out.println(BU.bytes2HexGoodLook(msg.encode()));
         System.out.println(msg);
 
-        Message msg2 = new Message(input, msg.encode());
+/*        Message msg2 = new Message(input, msg.encode());
         msg2.decode();
         System.out.println(msg2);
 
-        System.out.println(msg.compare(msg2));
+        System.out.println(msg.compare(msg2));*/
 
 
 

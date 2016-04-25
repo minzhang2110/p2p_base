@@ -212,9 +212,11 @@ public class Utils {
         Pattern pattern = Pattern.compile("\\[([a-z]{1,10})\\]",
                 Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE );
         Matcher matcher = pattern.matcher(p2pStr);
-        int index = 1;
+        int index = 0;
         while(matcher.find()){
-            String value = sectionValue[index++];
+            String value = "";
+            if((++index) <= (sectionValue.length - 1))
+                value = sectionValue[index];
             //sectionMap.put(matcher.group(1), value.trim());
             String name = matcher.group(1);
             if(name.toLowerCase().trim().equals(section))
