@@ -295,7 +295,9 @@ public class Message {
             list = header.list;
             for(int i = 0; i < list.size(); i++){
                 field = list.get(i);
-                if(field.getName().toLowerCase().equals("cmdid") && field.getClass() == OneByte.class)
+                if(field.getName().toLowerCase().equals("cmdid")
+                        && field.getClass() == OneByte.class
+                        && !field.getStrValue().equals(""))
                     return U.parseByte(field.getStrValue());
             }
         }
@@ -304,7 +306,9 @@ public class Message {
             list = msgBody.list;
             for(int i = 0; i < list.size(); i++){
                 field = list.get(i);
-                if(field.getName().toLowerCase().equals("cmdid") && field.getClass() == OneByte.class)
+                if(field.getName().toLowerCase().equals("cmdid")
+                        && field.getClass() == OneByte.class
+                        && !field.getStrValue().equals(""))
                     return U.parseByte(field.getStrValue());
             }
         }
@@ -313,7 +317,9 @@ public class Message {
             list = longHeader.list;
             for(int i = 0; i < list.size(); i++){
                 field = list.get(i);
-                if(field.getName().toLowerCase().equals("cmdid") && field.getClass() == OneByte.class)
+                if(field.getName().toLowerCase().equals("cmdid")
+                        && field.getClass() == OneByte.class
+                        && !field.getStrValue().equals(""))
                     return U.parseByte(field.getStrValue());
             }
         }
