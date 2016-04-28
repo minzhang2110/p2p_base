@@ -48,8 +48,8 @@ public class Message {
             msgBody = null;
         else{
             ArrayList<Field>  list = U.getFieldList(strSection, config);
-            msgBody = new MsgBody(list, true);
-            msgBody.setBodyLen(0);
+            msgBody = new MsgBlock(list, true);
+            //msgBody.setBodyLen(0);
         }
     }
     private void initHeader(String p2pStr){
@@ -58,7 +58,7 @@ public class Message {
             header = null;
         else{
             ArrayList<Field>  list = U.getFieldList(strSection, config);
-            header = new MsgHeader(list, true);
+            header = new MsgBlock(list, true);
             int len = 0;
             if(msgBody != null)
                 len += msgBody.getLen();
@@ -71,7 +71,7 @@ public class Message {
             longHeader = null;
         else{
             ArrayList<Field> list = U.getFieldList(strSection, config);
-            longHeader = new MsgLongHeader(list, true);
+            longHeader = new MsgBlock(list, true);
             int len = 0;
             if(msgBody !=null) len += msgBody.getLen();
             if(header != null) len += header.getLen();
@@ -327,9 +327,9 @@ public class Message {
     }
 
     private MsgHttpHeader http;
-    public  MsgLongHeader longHeader;
-    public  MsgHeader header;
-    public MsgBody msgBody;
+    public  MsgBlock longHeader;
+    public  MsgBlock header;
+    public MsgBlock msgBody;
     private BufferMgr mgr;
     private MsgConfig config;
     private Boolean encodedOrDecoded = false;//编码或解码过了
