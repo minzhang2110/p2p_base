@@ -19,6 +19,7 @@ import java.util.ArrayList;
  * 为了打印更加直观，加入了scope来判断第几层数组
  */
 public class Array extends Field {
+    public final static int MAX_ARRAY_NUM = 100;
 
     @Override
     public void encode(BufferMgr bufferMgr) {
@@ -161,6 +162,9 @@ public class Array extends Field {
     }
 
     private void balanceGroupList(int expectNum){
+        if(expectNum > MAX_ARRAY_NUM) {
+            throw new IllegalArgumentException("数组个数" + expectNum + "过大。允许最大数组个数为" + MAX_ARRAY_NUM);
+        }
         int factNum = groupList.size();
         if(factNum == expectNum)
             return;
