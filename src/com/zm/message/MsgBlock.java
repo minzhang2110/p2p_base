@@ -45,6 +45,7 @@ public class MsgBlock {
 
         for(int i = 0; i < list.size(); i++){
             if(list.get(i).getName().toLowerCase().indexOf("len") != -1){
+                list.get(i).setValueCare(true);//强制比较msglen和bodylen
                 for(int j = i + 1; j < list.size(); j++)
                     len += list.get(j).getLen();
                 list.get(i).setOriginValue("" + len);
