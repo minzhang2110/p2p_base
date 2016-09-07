@@ -45,9 +45,13 @@ public class MsgBlock {
 
         for(int i = 0; i < list.size(); i++){
             if(list.get(i).getName().toLowerCase().indexOf("len") != -1){
-                list.get(i).setValueCare(true);//强制比较msglen和bodylen
-                //如果值为"*"再重新计算
-                if(list.get(i).getOriginValue().equals("0")) {//"*"会被转换成默认值0
+                if(list.get(i).getOriginValue().equals("**")) {//若值为"**"
+                    list.get(i).setValueCare(false);//不比较msglen和bodylen
+                } else {
+                    list.get(i).setValueCare(false);//强制比较msglen和bodylen
+                }
+                //如果值为"*"或"**"再重新计算
+                if(list.get(i).getOriginValue().equals("0") || list.get(i).getOriginValue().equals("**")) {//"*"会被转换成默认值0
                     for(int j = i + 1; j < list.size(); j++)
                         len += list.get(j).getLen();
                     list.get(i).setOriginValue("" + len);
