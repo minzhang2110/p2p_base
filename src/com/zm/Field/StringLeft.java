@@ -5,13 +5,13 @@ import com.zm.message.BufferMgr;
 /**
  * Created by Administrator on 2016/1/17.
  */
-public class HttpBody extends Field {
-    public HttpBody(String name, String originValue) {
+public class StringLeft extends Field {
+    public StringLeft(String name, String originValue) {
         super(name, originValue);
         len = originValue.length();
     }
 
-    public HttpBody(String name, String originValue, boolean netByte, boolean valueCare) {
+    public StringLeft(String name, String originValue, boolean netByte, boolean valueCare) {
         super(name, originValue, netByte, valueCare);
         len = originValue.length();
     }

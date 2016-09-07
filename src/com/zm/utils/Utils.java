@@ -2,14 +2,12 @@ package com.zm.utils;
 
 import com.zm.Field.*;
 import com.zm.encryption.Encrypt;
-import com.zm.message.BufferMgr;
 import com.zm.message.MsgConfig;
 import com.zm.message.RequestMessage;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -194,8 +192,8 @@ public class Utils {
                 //data = new Array(name, value, ifNetOrder, ifValueCare);Array作为新数组
                 data = new FourBytes(name, value, ifNetOrder, ifValueCare);//兼容以前的类型
                 break;
-            case 'b':
-                data = new HttpBody(name, value, ifNetOrder, ifValueCare);
+            case 'x':
+                data = new StringLeft(name, value, ifNetOrder, ifValueCare);
                 break;
             default:
                 throw new IllegalStateException("数据类型错误，不存在" + type + "@类型数据");
