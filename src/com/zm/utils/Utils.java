@@ -135,7 +135,7 @@ public class Utils {
         String type = "";
         String name = "";
         String value = "";
-        Pattern pattern = Pattern.compile("^([\\^\\~\\!]?)([1248aihsb])@([0-9a-z_]+)=(\\S+)$",
+        Pattern pattern = Pattern.compile("^([\\^\\~\\!]?)([1248aihsxyz])@([0-9a-z_]+)=(\\S+)$",
                 Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE);
         Matcher matcher = pattern.matcher(tmp);
         if(matcher.find()){
@@ -194,6 +194,12 @@ public class Utils {
                 break;
             case 'x':
                 data = new StringLeft(name, value, ifNetOrder, ifValueCare);
+                break;
+            case 'y':
+                data = new HexLeft(name, value, ifNetOrder, ifValueCare);
+                break;
+            case 'z':
+                data = new SizeLeft(name, value, ifNetOrder, ifValueCare);
                 break;
             default:
                 throw new IllegalStateException("数据类型错误，不存在" + type + "@类型数据");
