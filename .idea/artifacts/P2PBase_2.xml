@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="P2PBase_2">
-    <output-path>$PROJECT_DIR$/out/artifacts/P2PBase_2</output-path>
-    <root id="archive" name="P2PBase_2.jar">
-      <element id="dir-copy" path="$PROJECT_DIR$/out/production/p2p_base" />
-    </root>
-  </artifact>
-</component>
